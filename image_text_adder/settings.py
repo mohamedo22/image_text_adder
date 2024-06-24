@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-x2=(yth6mc(_qa^g+ijetix9$r9gt!5_!a!hs)x*4__x3cl=js
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -76,10 +76,15 @@ WSGI_APPLICATION = 'image_text_adder.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'cerDB',
+        'USER': 'postgres',
+        'PASSWORD': 'Mohamed 12345678',
+        'HOST': 'localhost',
+        'PORT': '5432'
     }
 }
+
 
 
 # Password validation
