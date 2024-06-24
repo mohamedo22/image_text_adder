@@ -24,7 +24,7 @@ class TextForm(forms.Form):
     text5 = forms.CharField(
         max_length=100,
         required=False,
-        widget=forms.TextInput(attrs={'placeholder': 'أسم المسؤول'})
+        widget=forms.TextInput(attrs={'placeholder': 'المسؤول'})
     )
     text6 = forms.CharField(
         max_length=100,
@@ -39,7 +39,7 @@ class TextForm(forms.Form):
     text8 = forms.CharField(
         max_length=100,
         required=False,
-        widget=forms.TextInput(attrs={'placeholder': 'المسؤول'})
+        widget=forms.TextInput(attrs={'placeholder': 'أسم المسؤول'})
     )
 
     class Meta:
