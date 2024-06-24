@@ -74,18 +74,19 @@ WSGI_APPLICATION = 'image_text_adder.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+
+import os
+# Update or add the DATABASES configuration
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'cerDB',
-        'USER': 'postgres',
-        'PASSWORD': 'Mohamed 12345678',
-        'HOST': 'localhost',
-        'PORT': '5432'
+        'NAME': 'cerdb',
+        'USER': 'mohamed',
+        'PASSWORD': 'p9ekOYutcJOB42aMT2lUKmoBLS1fGfKE', 
+        'HOST': 'dpg-cpsk2tqj1k6c738otbv0-a',
+        'PORT': '5432',
     }
 }
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
