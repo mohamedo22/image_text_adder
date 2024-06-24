@@ -32,7 +32,7 @@ def home(request):
             }
             image_path = image_paths.get(valueOfPath, 'image_editor/images/default.jpeg')
             images_base64 = []
-
+            counter = 0
             for name in names:
                 image = Image.open(image_path)
                 draw = ImageDraw.Draw(image)
@@ -69,7 +69,7 @@ def home(request):
                     bidi_text = get_display(reshaped_text)  # Handle bidirectional text
                     if i == len(texts) - 1 or i == len(texts) - 4:
                         x_position = 200
-                    elif i == len(texts) - 2 or i == len(texts) - 3:
+                    elif i == len(texts) - 2 or i == len(texts) - 3: 
                         x_position = 2300
                     else:
                         # Calculate text size using textbbox
@@ -87,10 +87,14 @@ def home(request):
                 response_image.seek(0)
                 image_base64 = base64.b64encode(response_image.getvalue()).decode('UTF-8')
                 images_base64.append(image_base64)
-
+                counter+=1
             request.session['images'] = images_base64
             request.session['names'] = names
-            return render(request, 'pdf_template.html', {'image': images_base64[0], 'names': names})
+            if counter != 0:
+                first_image = image_base64[0]
+            else:
+                first_image = None 
+            return render(request, 'pdf_template.html',  {'image': first_image, 'names': names})
     else:
         form = TextForm()
     return render(request, 'upload_image.html', {'form': form})
