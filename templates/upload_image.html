@@ -47,8 +47,20 @@
             border-radius: 5px;
             outline:1px solid transparent;
             transition:all 700ms;
-            width: 30rem;
+            width: 15rem;
         }
+        textarea{
+            resize: vertical;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline:1px solid transparent;
+            text-align:center;
+            box-sizing: border-box;
+            height: 20rem;
+            
+        }
+
         input[type="text"]:focus
         {
             outline-color:rgb(7,168,105);
@@ -61,6 +73,9 @@
             border-radius: 5px;
             cursor: pointer;
             width: fit-content;
+            display:flex;
+            align-items:center;
+            gap:1rem;
         }
         
         button:hover {
@@ -190,21 +205,21 @@
         {{ form.non_field_errors }}
         <div class="container_of_form">
                 {% for field in form.visible_fields %}
-                    {% if forloop.counter <= 4 %}
+                    {% if forloop.counter <= 6 %}
                         <p>{{ field }}</p>
                     {% endif %}
                 {% endfor %}
                 <div class="last-inputs-container">
                         <div class="col">
                                 {% for field in form.visible_fields %}
-                                    {% if forloop.counter == 5 or forloop.counter == 6 %}
+                                    {% if forloop.counter == 7 or forloop.counter == 8 %}
                                         <p>{{ field }}</p>
                                     {% endif %}
                                 {% endfor %}
                         </div>
                         <div class="col">
                                 {% for field in form.visible_fields %}
-                                    {% if forloop.counter == 7 or forloop.counter == 8 %}
+                                    {% if forloop.counter == 9 or forloop.counter == 10 %}
                                         <p>{{ field }}</p>
                                     {% endif %}
                                 {% endfor %}
@@ -224,24 +239,23 @@
                   </div>
         </div>
         <div class="containerOfbuttons">
-            <button type="submit" formaction="{% url 'home' %}">معاينة</button>
+            <button type="submit" onclick="submitBtn()" id="submit-btn" formaction="{% url 'home' %}"><span> معاينة </span></button>
             <button formaction="{% url 'downloadFromHome' %}"> (الشهادات) تحميل الشهادة</button>
         </div>
     </form>
 </div>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.querySelector('form');
-        const submitButton = form.querySelector('button');
-        const loader = document.createElement('div');
-        loader.classList.add('loader');
-        submitButton.appendChild(loader);
-
-        form.addEventListener('submit', function () {
+    function submitBtn()
+    {
+            const form = document.querySelector('form');
+            form.submit();
+            const submitButton = document.getElementById('submit-btn')
+            const loader = document.createElement('div');
+            loader.classList.add('loader');
+            submitButton.appendChild(loader);
             loader.style.display = 'inline-block';
             submitButton.disabled = true;
-        });
-    });
+    }
     document.addEventListener("DOMContentLoaded", function() {
       document.getElementById("value-5").checked = true;
     });

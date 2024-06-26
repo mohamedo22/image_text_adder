@@ -2,42 +2,42 @@ from django import forms
 
 class TextForm(forms.Form):
     text1 = forms.CharField(
-        max_length=100,
         required=False,
         widget=forms.TextInput(attrs={'placeholder': 'مقدمة الشكر'})
     )
     text2 = forms.CharField(
-        max_length=100,
         required=False,
-        widget=forms.TextInput(attrs={'placeholder': 'اسم الممنوح له الشهاده او التكريم (او مجموعة اسماء)'})
+        widget=forms.Textarea(attrs={'placeholder': 'اسم الممنوح له الشهاده او التكريم (او مجموعة اسماء)' , 'row':1000})
     )
     text3 = forms.CharField(
-        max_length=100,
         required=False,
         widget=forms.TextInput(attrs={'placeholder': 'عبارات الشكر'})
     )
     text4 = forms.CharField(
-        max_length=100,
         required=False,
-        widget=forms.TextInput(attrs={'placeholder': 'الخاتمة'})
+        widget=forms.TextInput(attrs={'placeholder': 'عبارات الشكر (اختياري)'})
     )
     text5 = forms.CharField(
-        max_length=100,
         required=False,
-        widget=forms.TextInput(attrs={'placeholder': 'المسؤول'})
+        widget=forms.TextInput(attrs={'placeholder': 'عبارات الشكر (اختياري)'})
     )
     text6 = forms.CharField(
-        max_length=100,
         required=False,
-        widget=forms.TextInput(attrs={'placeholder': 'أسم المسؤول'})
+        widget=forms.TextInput(attrs={'placeholder': 'عبارات الشكر (اختياري)'})
     )
     text7 = forms.CharField(
-        max_length=100,
         required=False,
         widget=forms.TextInput(attrs={'placeholder': 'المسؤول'})
     )
     text8 = forms.CharField(
-        max_length=100,
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'أسم المسؤول'})
+    )
+    text9 = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'المسؤول'})
+    )
+    text10 = forms.CharField(
         required=False,
         widget=forms.TextInput(attrs={'placeholder': 'أسم المسؤول'})
     )
@@ -52,5 +52,7 @@ class TextForm(forms.Form):
             'text6': '',
             'text7': '',
             'text8': '',
+            'text9': '',
+            'text10': '',
         }
         label_suffix = ''
