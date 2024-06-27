@@ -114,7 +114,11 @@ def home(request):
 
             request.session['images'] = images_base64
             request.session['names'] = names
-            return render(request, 'pdf_template.html', {'images': images_base64, 'names': names})
+            if counter != 0:
+                first_image = images_base64[0]
+            else:
+                first_image = None 
+            return render(request, 'pdf_template.html', {'image': first_image, 'names': names})
     else:
         form = TextForm()
     return render(request, 'upload_image.html', {'form': form})
