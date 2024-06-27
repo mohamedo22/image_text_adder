@@ -40,7 +40,7 @@ def home(request):
                 texts[1] = name
 
                 # Define positions, fonts, colors, and sizes for each text
-                y_positions = [1000, 1150, 1300, 1450, 1550, 1650, 2100, 2300, 2100, 2300]
+                y_positions = [1000, 1150, 1300, 1400, 1500, 1650, 1800, 1950, 1800, 1950]
                 fonts = [
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 70),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 100),
@@ -48,9 +48,9 @@ def home(request):
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 70),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 70),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 70),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 85),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 75),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 85),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 75),
                 ]
                 colors = [
@@ -114,11 +114,7 @@ def home(request):
 
             request.session['images'] = images_base64
             request.session['names'] = names
-            if counter != 0:
-                first_image = images_base64[0]
-            else:
-                first_image = None 
-            return render(request, 'pdf_template.html', {'image': first_image, 'names': names})
+            return render(request, 'pdf_template.html', {'images': images_base64, 'names': names})
     else:
         form = TextForm()
     return render(request, 'upload_image.html', {'form': form})
@@ -199,7 +195,7 @@ def download_from_home(request):
                 texts[1] = name
 
                 # Define positions, fonts, colors, and sizes for each text
-                y_positions = [1000, 1150, 1300, 1450, 1550, 1650, 2100, 2300, 2100, 2300]
+                y_positions = [1000, 1150, 1300, 1450, 1550, 1850, 2100, 2300, 2100, 2300]
                 fonts = [
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 70),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 100),
@@ -216,7 +212,7 @@ def download_from_home(request):
                     (0, 0, 0),
                     (0, 131, 117),
                     (0, 0, 0),
-                    (0, 0, 0),
+                    (0, 0, 0),  
                     (0, 0, 0),
                     (0, 0, 0),
                     (0, 131, 117),

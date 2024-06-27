@@ -23,7 +23,7 @@ class TextForm(forms.Form):
     )
     text6 = forms.CharField(
         required=False,
-        widget=forms.TextInput(attrs={'placeholder': 'عبارات الشكر (اختياري)'})
+        widget=forms.TextInput(attrs={'placeholder': 'الخاتمة'})
     )
     text7 = forms.CharField(
         required=False,
