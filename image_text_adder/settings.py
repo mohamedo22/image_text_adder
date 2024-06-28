@@ -122,5 +122,12 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-CELERY_BROKER_URL = 'redis://:password@hostname:port/0'
-CELERY_RESULT_BACKEND = 'redis://:password@hostname:port/0'
+
+
+
+CELERY_BROKER_URL = 'redis://:p9ekOYutcJOB42aMT2lUKmoBLS1fGfKE@dpg-cpsk2tqj1k6c738otbv0-a.singapore-postgres.render.com:5432/0'
+CELERY_RESULT_BACKEND = 'redis://:p9ekOYutcJOB42aMT2lUKmoBLS1fGfKE@dpg-cpsk2tqj1k6c738otbv0-a.singapore-postgres.render.com:5432/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
