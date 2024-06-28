@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse , JsonResponse
 from .forms import TextForm
 from django.contrib.auth.models import User
 from PIL import Image, ImageDraw, ImageFont
@@ -15,7 +15,7 @@ import base64
 import tempfile
 from PIL import Image
 from zipfile import ZipFile
-from celery.result import AsyncResult
+from .tasks import *
 def home(request):
     if request.method == 'POST':
         valueOfPath = request.POST['value-radio']
@@ -188,23 +188,3 @@ def download_from_home(request):
     else:
         form = TextForm()
     return render(request, 'upload_image.html', {'form': form})
-
-def get_task_status(request, task_id):
-    task = AsyncResult(task_id)
-    if task.state == 'PENDING':
-        response = {'state': task.state, 'status': 'Pending...'}
-    elif task.state != 'FAILURE':
-        response = {
-            'state': task.state,
-            'status': task.info.get('status', '') if isinstance(task.info, dict) else task.info,
-            'result': task.result,
-        }
-        if task.state == 'SUCCESS':
-            zip_data = base64.b64decode(task.result)
-            response = HttpResponse(zip_data, content_type='application/zip')
-            response['Content-Disposition'] = 'attachment; filename="all_pdfs.zip"'
-            return response
-    else:
-        response = {'state': task.state, 'status': str(task.info)}
-
-    return JsonResponse(response)

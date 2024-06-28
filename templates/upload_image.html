@@ -260,32 +260,5 @@
       document.getElementById("value-5").checked = true;
     });
   </script>
-  <script>
-    function pollTask(taskId) {
-        fetch(`/check_task_status/${taskId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'SUCCESS') {
-                    window.location.href = `/check_task_status/${taskId}`;
-                } else {
-                    setTimeout(() => pollTask(taskId), 2000);
-                }
-            });
-    }
-
-    document.querySelector('form').addEventListener('submit', function (event) {
-        event.preventDefault();
-        const formData = new FormData(this);
-        fetch(this.action, {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.json())
-            .then(data => {
-                pollTask(data.task_id);
-            });
-    });
-</script>
-
 </body>
 </html>
