@@ -180,30 +180,31 @@ def download_from_home(request):
             names = [name.strip() for name in names if name.strip()]
             texts = [form.cleaned_data[f'text{i}'] for i in range(1, 11)]
             image_paths = [get_image_path(valueOfPath) for _ in names]
-
+            
+            # Start the Celery task
             task = process_images.delay(image_paths, names, texts)
-            return JsonResponse({'task_id': task.id, 'status': 'Processing started'})
+            return JsonResponse({'task_id': task.id})
 
     else:
         form = TextForm()
     return render(request, 'upload_image.html', {'form': form})
 
-def get_image_path(valueOfPath):
-    image_paths = {
-        "c1": 'image_editor/images/ce_1.jpg',
-        "c2": 'image_editor/images/ce_2.jpg',
-        "c3": 'image_editor/images/ce_3.jpg',
-        "c4": 'image_editor/images/ce_4t.jpg',
-        "c5": 'image_editor/images/ce_5t.jpg'
-    }
-    return image_paths.get(valueOfPath, 'image_editor/images/default.jpeg')
-
-def check_task_status(request, task_id):
-    task_result = AsyncResult(task_id)
-    if task_result.status == 'SUCCESS':
-        zip_data = base64.b64decode(task_result.result)
-        response = HttpResponse(zip_data, content_type='application/zip')
-        response['Content-Disposition'] = 'attachment; filename="all_pdfs.zip"'
-        return response
+def get_task_status(request, task_id):
+    task = AsyncResult(task_id)
+    if task.state == 'PENDING':
+        response = {'state': task.state, 'status': 'Pending...'}
+    elif task.state != 'FAILURE':
+        response = {
+            'state': task.state,
+            'status': task.info.get('status', '') if isinstance(task.info, dict) else task.info,
+            'result': task.result,
+        }
+        if task.state == 'SUCCESS':
+            zip_data = base64.b64decode(task.result)
+            response = HttpResponse(zip_data, content_type='application/zip')
+            response['Content-Disposition'] = 'attachment; filename="all_pdfs.zip"'
+            return response
     else:
-        return JsonResponse({'status': task_result.status})
+        response = {'state': task.state, 'status': str(task.info)}
+
+    return JsonResponse(response)
