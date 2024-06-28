@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول</title>
+    <link rel="icon" href="https://i.ibb.co/TkxCm1n/vector-user-authentication-filled-icon.jpg">
+    <style>
+        body {
+            padding-top:2rem;
+            box-sizing:border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items:center;
+            height: 100vh;
+            margin: 0;
+        }
+        h2 {
+            color:  rgb(13,169,166);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        form {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            height: max-content;
+        }
+        form p {
+            margin-bottom: 1rem;
+        }
+        .helptext, ul li {
+            color: gray;
+            font-size: .8rem;
+        }
+        form input[type="text"],
+        form input[type="email"],
+        form input[type="password"],
+        form select {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+            outline: none;
+            transition: all 400ms;
+        }
+        form input[type="text"]:focus,
+        form input[type="email"]:focus,
+        form input[type="password"]:focus {
+            border-color:  rgb(13,169,166);
+            caret-color: rgb(13,169,166);
+        }
+        form button {
+            padding: 10px 20px;
+            background-color: rgb(13,169,166);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: fit-content;
+            display:flex;
+            align-items:center;
+            gap:1rem;
+            margin:auto;
+        }
+        form button:hover {
+            background-color: rgb(61,126,185);
+        }
+        .errorlist {
+            list-style-type: none;
+            padding: 0;
+            color: #e60000 !important;
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            background-color: #fff6f5;
+            padding: .5rem;
+            border-radius: 2px;
+            outline: 1px solid #d43d545b;
+        }
+        .errorlist li {
+            margin-bottom: 5px;
+            color: red !important;
+        }
+        .error {
+            border-color: red !important;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #3e6257 !important;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('form');
+            const submitButton = form.querySelector('button');
+            const loader = document.createElement('div');
+            loader.classList.add('loader');
+            submitButton.appendChild(loader);
+
+            form.addEventListener('submit', function () {
+                loader.style.display = 'inline-block';
+                submitButton.disabled = true;
+            });
+        });
+    </script>
+</head>
+<body>
+    <form method="post" novalidate>
+        {% csrf_token %}
+        <h2> {% block header %}تسجيل دخول الأدمن{% endblock header %} </h2>
+        {{ form.as_p }}
+        <button type="submit"> {% block btnText %}دخول{% endblock btnText %} </button>
+    </form>
+</body>
+</html>
