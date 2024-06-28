@@ -171,6 +171,16 @@ def download_pdf(request):
     response = HttpResponse(zip_buffer, content_type='application/zip')
     response['Content-Disposition'] = 'attachment; filename="all_pdfs.zip"'
     return response
+def get_image_path(valueOfPath):
+    image_paths = {
+        "c1": 'image_editor/images/ce_1.jpg',
+        "c2": 'image_editor/images/ce_2.jpg',
+        "c3": 'image_editor/images/ce_3.jpg',
+        "c4": 'image_editor/images/ce_4t.jpg',
+        "c5": 'image_editor/images/ce_5t.jpg'
+    }
+    return image_paths.get(valueOfPath, 'image_editor/images/default.jpeg')
+
 def download_from_home(request):
     if request.method == 'POST':
         valueOfPath = request.POST['value-radio']
@@ -181,10 +191,18 @@ def download_from_home(request):
             texts = [form.cleaned_data[f'text{i}'] for i in range(1, 11)]
             image_paths = [get_image_path(valueOfPath) for _ in names]
             
-            # Start the Celery task
+            # Start the Celery task and wait for the result
             task = process_images.delay(image_paths, names, texts)
-            return JsonResponse({'task_id': task.id})
-
+            task.wait(timeout=None)  # You can specify a timeout if needed
+            
+            if task.state == 'SUCCESS':
+                zip_data = base64.b64decode(task.result)
+                response = HttpResponse(zip_data, content_type='application/zip')
+                response['Content-Disposition'] = 'attachment; filename="all_pdfs.zip"'
+                return response
+            else:
+                return HttpResponse("Task failed or timed out.", status=500)
+                
     else:
         form = TextForm()
     return render(request, 'upload_image.html', {'form': form})
