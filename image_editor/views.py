@@ -15,6 +15,7 @@ import base64
 import tempfile
 from PIL import Image
 from zipfile import ZipFile
+from celery.result import AsyncResult
 def home(request):
     if request.method == 'POST':
         valueOfPath = request.POST['value-radio']
@@ -178,110 +179,31 @@ def download_from_home(request):
             names = form.cleaned_data['text2'].replace('\r\n', '\n').split('\n')
             names = [name.strip() for name in names if name.strip()]
             texts = [form.cleaned_data[f'text{i}'] for i in range(1, 11)]
-            image_paths = {
-                "c1": 'image_editor/images/ce_1.jpg',
-                "c2": 'image_editor/images/ce_2.jpg',
-                "c3": 'image_editor/images/ce_3.jpg',
-                "c4": 'image_editor/images/ce_4t.jpg',
-                "c5": 'image_editor/images/ce_5t.jpg'
-            }
-            image_path = image_paths.get(valueOfPath, 'image_editor/images/default.jpeg')
-            batch_size = 10  # Adjust the batch size as needed
+            image_paths = [get_image_path(valueOfPath) for _ in names]
 
-            response_pdfs = []
-
-            for i in range(0, len(names), batch_size):
-                batch_names = names[i:i+batch_size]
-                response_pdfs += process_batch(batch_names, texts, image_path)
-
-            zip_buffer = BytesIO()
-            with ZipFile(zip_buffer, 'w') as zf:
-                for name, pdf in response_pdfs:
-                    zf.writestr(f'{name}.pdf', pdf)
-
-            zip_buffer.seek(0)
-            response = HttpResponse(zip_buffer, content_type='application/zip')
-            response['Content-Disposition'] = 'attachment; filename="all_pdfs.zip"'
-            return response
+            task = process_images.delay(image_paths, names, texts)
+            return JsonResponse({'task_id': task.id, 'status': 'Processing started'})
 
     else:
         form = TextForm()
-        return render(request, 'upload_image.html', {'form': form})
+    return render(request, 'upload_image.html', {'form': form})
 
-def process_batch(names, texts, image_path):
-    pdf_buffers = []
+def get_image_path(valueOfPath):
+    image_paths = {
+        "c1": 'image_editor/images/ce_1.jpg',
+        "c2": 'image_editor/images/ce_2.jpg',
+        "c3": 'image_editor/images/ce_3.jpg',
+        "c4": 'image_editor/images/ce_4t.jpg',
+        "c5": 'image_editor/images/ce_5t.jpg'
+    }
+    return image_paths.get(valueOfPath, 'image_editor/images/default.jpeg')
 
-    for name in names:
-        image = Image.open(image_path)
-        draw = ImageDraw.Draw(image)
-        texts[1] = name
-
-        # Define positions, fonts, colors, and sizes for each text
-        y_positions = [1000, 1150, 1300, 1450, 1550, 1850, 2100, 2300, 2100, 2300]
-        fonts = [ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", size) for size in [70, 100, 70, 70, 70, 70, 90, 75, 90, 75]]
-        colors = [(0, 0, 0), (0, 131, 117), (0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 131, 117), (0, 0, 0), (0, 131, 117), (0, 0, 0)]
-        image_width = image.width
-
-        for i, (text, y_position, font, color) in enumerate(zip(texts, y_positions, fonts, colors)):
-            reshaped_text = arabic_reshaper.reshape(text)
-            bidi_text = get_display(reshaped_text)
-            words = bidi_text.split(' ')
-            lines = []
-            current_line = words[0]
-
-            for word in words[1:]:
-                test_line = current_line + ' ' + word
-                text_bbox = draw.textbbox((0, 0), test_line, font=font)
-                text_width = text_bbox[2] - text_bbox[0]
-                if text_width <= image_width - 400:
-                    current_line = test_line
-                else:
-                    lines.append(current_line)
-                    current_line = word
-
-            lines.append(current_line)
-
-            for line in lines:
-                text_bbox = draw.textbbox((0, 0), line, font=font)
-                text_width = text_bbox[2] - text_bbox[0]
-                x_position = (image_width - text_width) // 2 if i not in [len(texts) - 1, len(texts) - 4, len(texts) - 2, len(texts) - 3] else (200 if i in [len(texts) - 1, len(texts) - 4] else 2300)
-                draw.text((x_position, y_position), line, fill=color, font=font)
-                y_position += text_bbox[3] - text_bbox[1] + 10
-
-        response_image = BytesIO()
-        image.save(response_image, 'JPEG')
-        response_image.seek(0)
-        image_base64 = base64.b64encode(response_image.getvalue()).decode('UTF-8')
-        images_base64 = [image_base64]
-
-        for image_base64 in images_base64:
-            image_data = base64.b64decode(image_base64)
-            with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
-                tmp_file.write(image_data)
-                tmp_file.flush()
-                tmp_file.close()
-                image_path = tmp_file.name
-
-            try:
-                image = Image.open(image_path)
-                img = ImageReader(image_path)
-                img_width, img_height = img.getSize()
-                scaling_factor_width = letter[0] / img_width
-                scaling_factor_height = letter[1] / img_height
-                scaling_factor = min(scaling_factor_width, scaling_factor_height)
-                new_width = img_width * scaling_factor * 0.9
-                new_height = img_height * scaling_factor * 0.9
-
-                buffer = BytesIO()
-                p = canvas.Canvas(buffer, pagesize=(600, 430))
-                p.drawImage(img, 0, 0, width=img_width * scaling_factor, height=img_height * scaling_factor, preserveAspectRatio=True, mask='auto')
-                p.showPage()
-                p.save()
-
-                pdf = buffer.getvalue()
-                buffer.close()
-                pdf_buffers.append((name, pdf))
-            finally:
-                pass
-
-    return pdf_buffers
+def check_task_status(request, task_id):
+    task_result = AsyncResult(task_id)
+    if task_result.status == 'SUCCESS':
+        zip_data = base64.b64decode(task_result.result)
+        response = HttpResponse(zip_data, content_type='application/zip')
+        response['Content-Disposition'] = 'attachment; filename="all_pdfs.zip"'
+        return response
+    else:
+        return JsonResponse({'status': task_result.status})
