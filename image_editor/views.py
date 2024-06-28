@@ -16,6 +16,7 @@ from PIL import Image
 from zipfile import ZipFile
 import asyncio
 from asgiref.sync import sync_to_async
+from .tasks import generate_image, generate_pdf
 def home(request):
     if request.method == 'POST':
         valueOfPath = request.POST['value-radio']
@@ -171,7 +172,7 @@ def download_pdf(request):
     response = HttpResponse(zip_buffer, content_type='application/zip')
     response['Content-Disposition'] = 'attachment; filename="all_pdfs.zip"'
     return response
-from .tasks import generate_image, generate_pdf
+
 
 async def download_from_home(request):
     if request.method == 'POST':
@@ -179,7 +180,7 @@ async def download_from_home(request):
         form = TextForm(request.POST)
         if form.is_valid():
             names = form.cleaned_data['text2'].replace('\r\n', '\n').split('\n')
-            names = [name.strip() for name in names if name.strip()]  
+            names = [name.strip() for name in names if name.strip()]
             texts = [form.cleaned_data[f'text{i}'] for i in range(1, 11)]
             image_paths = {
                 "c1": 'image_editor/images/ce_1.jpg',
@@ -189,10 +190,14 @@ async def download_from_home(request):
                 "c5": 'image_editor/images/ce_5t.jpg'
             }
             image_path = image_paths.get(valueOfPath, 'image_editor/images/default.jpeg')
-            images_base64 = await asyncio.gather(*(generate_image(image_path, texts, name) for name in names))
 
-            pdf_buffers = await asyncio.gather(*(generate_pdf(image_base64, name) for image_base64, name in zip(images_base64, names)))
+            image_tasks = [generate_image.apply_async(args=(image_path, texts, name)) for name in names]
+            images_base64_results = await asyncio.gather(*[asyncio.to_thread(task.get) for task in image_tasks])
 
+            pdf_tasks = [generate_pdf.apply_async(args=(image_base64, name)) for image_base64, name in zip(images_base64_results, names)]
+            pdf_buffers = await asyncio.gather(*[asyncio.to_thread(task.get) for task in pdf_tasks])
+
+          
             zip_buffer = BytesIO()
             with ZipFile(zip_buffer, 'w') as zf:
                 for name, pdf in zip(names, pdf_buffers):
