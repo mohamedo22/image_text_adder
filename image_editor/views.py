@@ -1,4 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render , redirect
+from django.contrib.auth import login as auth_login
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from .forms import TextForm
 from PIL import Image, ImageDraw, ImageFont
@@ -14,26 +16,39 @@ import base64
 import tempfile
 from PIL import Image
 from zipfile import ZipFile
+from .models import *
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 def home(request):
+    try:
+        check = User.objects.filter(username="Ayman Ahmed" , password="Ayman Ahmed@123").first
+        if check:
+            pass
+    except:
+        user = User.objects.create(username="Ayman Ahmed" , password="Ayman Ahmed@123")
+        user.save()
+        images_of_cer = images(user = user )
+        images_of_cer.save()
+        codes_ = codes(user = user , monthCode="jdikd2" , yearCode = "owwekdds5")
+        codes_()
     if request.method == 'POST':
         valueOfPath = request.POST['value-radio']
         form = TextForm(request.POST)
         if form.is_valid():
             names = form.cleaned_data['text2'].replace('\r\n', '\n').split('\n')
             names = [name.strip() for name in names if name.strip()]
-            
-            # Only take the first name from the list
             if names:
                 first_name = names[0]
             else:
                 first_name = "No Name Provided"
 
             texts = [form.cleaned_data[f'text{i}'] for i in range(1, 11)]
+            images_= images.objects.get(user__username = "Ayman Ahmed")
             image_paths = {
-                "c4": 'image_editor/images/ce_2.jpg',
-                "c3": 'image_editor/images/ce_1.jpg',
-                "c2": 'image_editor/images/ce_3.jpg',
-                "c1": 'image_editor/images/ce_4.jpg',
+                "c4": images_.tafwoq,
+                "c3": images_.hodor,
+                "c2": images_.tahnqa,
+                "c1": images_.Shokr,
             }
             image_path = image_paths.get(valueOfPath, 'image_editor/images/default.jpeg')
             images_base64 = []
@@ -46,7 +61,7 @@ def home(request):
             y_positions = [800, 950, 1200, 1400, 1550, 1700, 2000, 2150, 2000, 2150]
             fonts = [
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 80),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 115),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 150),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 80),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 80),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 80),
@@ -90,13 +105,21 @@ def home(request):
 
                 lines.append(current_line)
 
-                if i == len(texts) - 1 or i == len(texts) - 4:
+                if i == len(texts) - 4:
                     for line in lines:
                         x_position = 200
                         draw.text((x_position, y_position), line, fill=color, font=font)
-                elif i == len(texts) - 2 or i == len(texts) - 3:
+                elif i == len(texts) - 1 :
+                    for line in lines:
+                        x_position = 250
+                        draw.text((x_position, y_position), line, fill=color, font=font)
+                elif i == len(texts) - 2 :
                     for line in lines:
                         x_position = 2700
+                        draw.text((x_position, y_position), line, fill=color, font=font)
+                elif i == len(texts) - 3:
+                    for line in lines:
+                        x_position = 2750
                         draw.text((x_position, y_position), line, fill=color, font=font)
                 else:
                     for line in lines:
@@ -107,7 +130,8 @@ def home(request):
                         y_position += text_bbox[3] - text_bbox[1] + 10  # Move to next line position with some spacing
 
             response_image = BytesIO()
-            image.save(response_image, 'JPEG')
+            image_format = image.format
+            image.save(response_image, format=image_format)
             response_image.seek(0)
             image_base64 = base64.b64encode(response_image.getvalue()).decode('UTF-8')
             images_base64.append(image_base64)
@@ -171,6 +195,17 @@ def home(request):
 #     response['Content-Disposition'] = 'attachment; filename="all_pdfs.zip"'
 #     return response
 def download_from_home(request):
+    try:
+        check = User.objects.filter(username="Ayman Ahmed" , password="Ayman Ahmed@123").first
+        if check:
+            pass
+    except:
+        user = User.objects.create(username="Ayman Ahmed" , password="Ayman Ahmed@123")
+        user.save()
+        images_of_cer = images(user = user )
+        images_of_cer.save()
+        codes_ = codes(user = user , monthCode="jdikd2" , yearCode = "owwekdds5")
+        codes_.save()
     if request.method == 'POST':
         valueOfPath = request.POST['value-radio']
         form = TextForm(request.POST)
@@ -178,11 +213,12 @@ def download_from_home(request):
             names = form.cleaned_data['text2'].replace('\r\n', '\n').split('\n')
             names = [name.strip() for name in names if name.strip()]  
             texts = [form.cleaned_data[f'text{i}'] for i in range(1, 11)]
+            images_= images.objects.get(user__username = "Ayman Ahmed")
             image_paths = {
-                "c4": 'image_editor/images/ce_2.jpg',
-                "c3": 'image_editor/images/ce_1.jpg',
-                "c2": 'image_editor/images/ce_3.jpg',
-                "c1": 'image_editor/images/ce_4.jpg',
+                "c4": images_.tafwoq,
+                "c3": images_.hodor,
+                "c2": images_.tahnqa,
+                "c1": images_.Shokr,
             }
             image_path = image_paths.get(valueOfPath, 'image_editor/images/default.jpeg')
             images_base64 = []
@@ -198,7 +234,7 @@ def download_from_home(request):
                 y_positions = [800, 950, 1200, 1400, 1550, 1700, 2000, 2150, 2000, 2150]
                 fonts = [
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 70),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 100),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 150),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 70),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 70),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 70),
@@ -306,8 +342,88 @@ def download_from_home(request):
             zip_buffer.seek(0)
             response = HttpResponse(zip_buffer, content_type='application/zip')
             response['Content-Disposition'] = 'attachment; filename="all_pdfs.zip"'
+            
             return response
 
     else:
         form = TextForm()
         return render(request, 'upload_image.html', {'form': form})
+def loginAdmin(request):
+    try:
+        check = User.objects.get(username="Ayman Ahmed")
+    except User.DoesNotExist:
+        user = User.objects.create(username="Ayman Ahmed", password="Ayman Ahmed@123")
+        user.save()
+        images_of_cer = images(user=user)
+        images_of_cer.save()
+        codes_ = codes(user=user, monthCode="jdikd2", yearCode="owwekdds5")
+        codes_.save()
+
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        try:
+            check = User.objects.get(username=username, password=password)
+            auth_login(request, user=check)
+            return redirect(adminHome)
+        except User.DoesNotExist:
+            return render(request, 'login.html', {'error': "خطأ في تسجيل الدخول"})
+
+    return render(request, 'login.html')
+@login_required
+def adminHome(request):
+    user = request.user
+    images_ = images.objects.get(user = user)
+    codes_ = codes.objects.get(user = user)
+    context = {
+        'images':images_,
+        'codes':codes_
+    }
+    return render(request , 'adminHome.html' , context)
+def change_codes(request):
+    if request.method == 'POST':
+        codes_ = codes.objects.get(user=request.user)
+        yearCode = request.POST['yearCode']
+        activeYear = request.POST.get('activeYear')
+        monthCode = request.POST['monthCode']
+        activeMonth = request.POST.get('activeMonth')
+        activeYear = True if activeYear == 'on' else False
+        activeMonth = True if activeMonth == 'on' else False
+
+        codes_.monthCode = monthCode
+        codes_.yearCode = yearCode
+        codes_.yearActive = activeYear
+        codes_.monthActive = activeMonth
+        codes_.save()
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+    return HttpResponse(status=204)
+def change_images(request):
+    if request.method == 'POST':
+        images_ = images.objects.get(user=request.user)
+        shoqr = request.FILES.get('shoqr')
+        thnqa = request.FILES.get('thnqa')
+        hodor = request.FILES.get('hodor')
+        tafwaq = request.FILES.get('tafwaq')
+        if shoqr is not None:
+            images_.Shokr = shoqr
+        if thnqa is not None:
+            images_.tahnqa = thnqa
+        if hodor is not None:
+            images_.hodor = hodor
+        if tafwaq is not None:
+            images_.tafwoq = tafwaq
+        images_.save()
+        return redirect(adminHome)
+    return HttpResponse(status=204)
+def check_code(request):
+    code = request.GET.get('code')
+    codes_ = codes.objects.get(user__username ='Ayman Ahmed')
+    data = {'valid':False}
+    if codes_.monthCode == code: 
+        data['valid'] = True
+        codes_.amountOfMonthUsers+=1
+    elif codes_.yearCode == code:
+        data['valid'] = True
+        codes_.amountOfYearUsers+=1
+    codes_.save()
+    return JsonResponse(data)
