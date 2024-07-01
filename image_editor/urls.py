@@ -14,4 +14,6 @@ urlpatterns = [
     path('change_codes/', views.change_codes, name='changeCodes'),
     path('change_images/', views.change_images, name='changeImages'),
     path('check_code/', views.check_code, name='checkValidCode'),
+    path('try_service/', views.homeTagreba, name='tryService'),
+    path('download_service/', views.download_from_homeTagreba, name='download_service'),
 ]

@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Readex+Pro:wght@160..700&display=swap');
         *
@@ -210,9 +211,12 @@
             width: 20rem;
             margin:auto;
         }
-
-        .input-container input {
-            padding-right: 40px;
+        .navigation
+        {
+            color: #0da9a6;
+            text-decoration: none;
+            margin: auto;
+            margin-top:2rem;
         }
         @media screen and (max-width:800px) {
             input[type="text"] {
@@ -273,13 +277,14 @@
                   </div>
         </div>
         <div class="input-container">
-            <input type="text" id="passCode" name="passCode">
+            <input type="text" id="passCode" name="passCode" placeholder="رمز الدخول">
             <div class="loaderAjax" id="loaderAjax"></div>
         </div>
         <div class="containerOfbuttons">
             <button type="submit" onclick="submitBtn()" id="submit-btn" formaction="{% url 'home' %}"><span> معاينة </span></button>
             <button formaction="{% url 'downloadFromHome' %}"> (الشهادات) تحميل الشهادة</button>
         </div>
+        <a href="{% url "tryService" %}" class="navigation">تجربة الخدمة</a>
     </form>
 </div>
 <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>

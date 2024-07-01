@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> التجربةالمجانية</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Readex+Pro:wght@160..700&display=swap');
         *
@@ -266,23 +267,14 @@
                     <label for="value-1">شكر وتقدير</label>
                     <input value="c2" name="value-radio" id="value-2" type="radio" required >
                     <label for="value-2">تهنئة</label>
-                    <input value="c3" name="value-radio" id="value-3" type="radio" required >
-                    <label for="value-3">شهادة حضور </label>
-                    <input value="c4" name="value-radio" id="value-4" type="radio" required >
-                    <label for="value-4"> شهادة تفوق دراسي</label>
                   </div>
         </div>
-        <div class="input-container">
-            <input type="text" id="passCode" name="passCode">
-            <div class="loaderAjax" id="loaderAjax"></div>
-        </div>
         <div class="containerOfbuttons">
-            <button type="submit" onclick="submitBtn()" id="submit-btn" formaction="{% url 'home' %}"><span> معاينة </span></button>
-            <button formaction="{% url 'downloadFromHome' %}"> (الشهادات) تحميل الشهادة</button>
+            <button type="submit" onclick="submitBtn()" id="submit-btn" formaction="{% url 'tryService' %}"><span> معاينة </span></button>
+            <button formaction="{% url 'download_service' %}"> (الشهادات) تحميل الشهادة</button>
         </div>
     </form>
 </div>
-<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
 <script>
     function submitBtn()
     {
@@ -296,52 +288,9 @@
             submitButton.disabled = true;
     }
     document.addEventListener("DOMContentLoaded", function() {
-      document.getElementById("value-4").checked = true;
+      document.getElementById("value-2").checked = true;
     });
-    window.onload = function(){
-        Btns = document.querySelectorAll("button").forEach((el)=>
-        {
-            el.disabled = true
-        });
-    }
     
-  </script>
-  <script>
-    $("#passCode").change(function(){
-        var passcode =$(this).val() ;
-        var form = $(this).closest("form");
-        $("#loaderAjax").show();
-        $.ajax({
-            url:form.attr("data-validate-username-url"),
-            data:{
-                'code':passcode
-            },
-            dataType:'json',
-            success: function(data){
-                $("#loaderAjax").hide();
-                if (data.valid){
-                    document.querySelectorAll("button").forEach((el)=>
-                    {
-                        el.disabled = false
-                    });
-                    $("#passCode").css("outline-color","green");
-                }
-                else{
-                    document.querySelectorAll("button").forEach((el)=>
-                    {
-                        el.disabled = true
-                    });
-                    $("#passCode").css("outline-color","red");
-                }
-                
-            },
-            error: function() {
-                $("#loaderAjax").hide();
-                alert("An error occurred. Please try again.");
-            }
- 
-        });
-     });
   </script>
 </body>
 </html>
