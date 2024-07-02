@@ -116,7 +116,7 @@ def home(request):
                     for line in lines:
                         x_position = 200
                         draw.text((x_position, y_position), line, fill=color, font=font)
-                elif i == len(texts) - 1 :
+                elif i == len(texts) - 3 :
                     for line in lines:
                         x_position = 250
                         draw.text((x_position, y_position), line, fill=color, font=font)
@@ -124,7 +124,7 @@ def home(request):
                     for line in lines:
                         x_position = 2700
                         draw.text((x_position, y_position), line, fill=color, font=font)
-                elif i == len(texts) - 3:
+                elif i == len(texts) - 1:
                     for line in lines:
                         x_position = 2750
                         draw.text((x_position, y_position), line, fill=color, font=font)
@@ -134,7 +134,7 @@ def home(request):
                         text_width = text_bbox[2] - text_bbox[0]
                         x_position = (image_width - text_width) // 2
                         draw.text((x_position, y_position), line, fill=color, font=font)
-                        y_position += text_bbox[3] - text_bbox[1] + 10  # Move to next line position with some spacing
+                        y_position += text_bbox[3] - text_bbox[1] + 10 
 
             response_image = BytesIO()
             image_format = image.format
@@ -292,23 +292,29 @@ def download_from_home(request):
 
                     lines.append(current_line)
 
-                    if i == len(texts) - 1 or i == len(texts) - 4:
+                    if i == len(texts) - 4:
                         for line in lines:
                             x_position = 200
                             draw.text((x_position, y_position), line, fill=color, font=font)
-                    elif i == len(texts) - 2 or i == len(texts) - 3:
+                    elif i == len(texts) - 3 :
+                        for line in lines:
+                            x_position = 250
+                            draw.text((x_position, y_position), line, fill=color, font=font)
+                    elif i == len(texts) - 2 :
                         for line in lines:
                             x_position = 2700
                             draw.text((x_position, y_position), line, fill=color, font=font)
-                            
-
+                    elif i == len(texts) - 1:
+                        for line in lines:
+                            x_position = 2750
+                            draw.text((x_position, y_position), line, fill=color, font=font)
                     else:
                         for line in lines:
                             text_bbox = draw.textbbox((0, 0), line, font=font)
                             text_width = text_bbox[2] - text_bbox[0]
                             x_position = (image_width - text_width) // 2
                             draw.text((x_position, y_position), line, fill=color, font=font)
-                            y_position += text_bbox[3] - text_bbox[1] + 10  # Move to next line position with some spacing
+                            y_position += text_bbox[3] - text_bbox[1] + 10 
 
                 response_image = BytesIO()
                 image.save(response_image, 'JPEG')
@@ -452,7 +458,7 @@ def homeTagreba(request):
                     for line in lines:
                         x_position = 200
                         draw.text((x_position, y_position), line, fill=color, font=font)
-                elif i == len(texts) - 2 :
+                elif i == len(texts) - 4 :
                     for line in lines:
                         x_position = 250
                         draw.text((x_position, y_position), line, fill=color, font=font)
@@ -460,7 +466,7 @@ def homeTagreba(request):
                     for line in lines:
                         x_position = 2700
                         draw.text((x_position, y_position), line, fill=color, font=font)
-                elif i == len(texts) - 4:
+                elif i == len(texts) - 2:
                     for line in lines:
                         x_position = 2750
                         draw.text((x_position, y_position), line, fill=color, font=font)
@@ -577,7 +583,7 @@ def download_from_homeTagreba(request):
                         for line in lines:
                             x_position = 200
                             draw.text((x_position, y_position), line, fill=color, font=font)
-                    elif i == len(texts) - 2 :
+                    elif i == len(texts) - 4 :
                         for line in lines:
                             x_position = 250
                             draw.text((x_position, y_position), line, fill=color, font=font)
@@ -585,7 +591,7 @@ def download_from_homeTagreba(request):
                         for line in lines:
                             x_position = 2700
                             draw.text((x_position, y_position), line, fill=color, font=font)
-                    elif i == len(texts) - 4:
+                    elif i == len(texts) - 2:
                         for line in lines:
                             x_position = 2750
                             draw.text((x_position, y_position), line, fill=color, font=font)
