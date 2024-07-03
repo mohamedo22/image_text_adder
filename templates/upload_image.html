@@ -48,7 +48,7 @@
             border-radius: 5px;
             outline:1px solid transparent;
             transition:all 700ms;
-            width: 15rem;
+            width: 20rem;
         }
         textarea{
             resize: vertical;
@@ -182,8 +182,8 @@
         #passCode
         {
             text-align:center;
+            width: 15rem;
             margin:auto;
-            margin-bottom:2rem;
         }
         button:disabled {
             background-color: gray; 
@@ -208,15 +208,16 @@
         .input-container {
             display:flex;
             position: relative;
-            width: 20rem;
+            width: 30rem;
             margin:auto;
+            align-items:center;
+            margin-bottom:2rem;
         }
         .navigation
         {
             color: #0da9a6;
             text-decoration: none;
-            margin: auto;
-            margin-top:2rem;
+            margin:auto;
         }
         @media screen and (max-width:800px) {
             input[type="text"] {
@@ -277,6 +278,7 @@
                   </div>
         </div>
         <div class="input-container">
+            <a href="{% url "tryService" %}" class="navigation">تجربة الخدمة مجانا</a>
             <input type="text" id="passCode" name="passCode" placeholder="رمز الدخول">
             <div class="loaderAjax" id="loaderAjax"></div>
         </div>
@@ -284,7 +286,7 @@
             <button type="submit" onclick="submitBtn()" id="submit-btn" formaction="{% url 'home' %}"><span> معاينة </span></button>
             <button formaction="{% url 'downloadFromHome' %}"> (الشهادات) تحميل الشهادة</button>
         </div>
-        <a href="{% url "tryService" %}" class="navigation">تجربة الخدمة</a>
+        <a href="https://ar-pdgogy.com/" class="navigation" style="margin-top:3rem;" target="_blank">للشراء قم بزيارة المتجر (بيدغوجي) </a>
     </form>
 </div>
 <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>

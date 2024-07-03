@@ -393,9 +393,10 @@ def homeTagreba(request):
 
             texts = [form.cleaned_data[f'text{i}'] for i in range(1, 11)]
             texts.append('**منتج خدمة تجريبية ')
+            images_= images.objects.get(user__username = "Ayman Ahmed")
             image_paths = {
-                "c1": 'media/images/shqrFree.jpg',
-                "c2": 'media/images/thnqaFree.jpg',
+                "c1": images_.Shokr,
+                "c2": images_.tahnqa,
             }
             image_path = image_paths.get(valueOfPath, 'image_editor/images/default.jpeg')
             images_base64 = []
@@ -405,7 +406,7 @@ def homeTagreba(request):
             
             texts[1] = first_name 
             
-            y_positions = [500, 600, 800, 950, 1050, 1200, 1400, 1550, 1400, 1550 , 1705 ]
+            y_positions = [800, 950, 1200, 1400, 1550, 1700, 2000, 2150, 2000, 2150,500]
             fonts = [
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 80),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 150),
@@ -430,14 +431,14 @@ def homeTagreba(request):
                 (0, 0, 0),
                 (0, 131, 117),
                 (0, 0, 0),
-                (100,120,105),
+                (230,0,0),
             ] 
             image_width = image.width
 
             # Draw text on the image
             for i, (text, y_position, font, color) in enumerate(zip(texts, y_positions, fonts, colors)):
-                reshaped_text = arabic_reshaper.reshape(text)  # Reshape the text
-                bidi_text = get_display(reshaped_text)  # Handle bidirectional text
+                reshaped_text = arabic_reshaper.reshape(text) 
+                bidi_text = get_display(reshaped_text)  
                 words = bidi_text.split(' ')
                 lines = []
                 current_line = words[0]
@@ -529,8 +530,7 @@ def download_from_homeTagreba(request):
 
                 texts[1] = name
 
-                # Define positions, fonts, colors, and sizes for each text
-                y_positions = [500, 600, 800, 950, 1050, 1200, 1400, 1550, 1400, 1550 , 1690 ]
+                y_positions = [800, 950, 1200, 1400, 1550, 1700, 2000, 2150, 2000, 2150,500]
                 fonts = [
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 70),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 150),
@@ -555,7 +555,7 @@ def download_from_homeTagreba(request):
                     (0, 0, 0),
                     (0, 131, 117),
                     (0, 0, 0),
-                    (100,120,105)
+                    (230,0,0)
                 ] 
                 image_width = image.width
 
