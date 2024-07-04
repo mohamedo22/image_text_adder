@@ -21,25 +21,27 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 def home(request):
     try:
-        check = User.objects.filter(username="Ayman Ahmed" , password="Ayman Ahmed@123").first
+        check = User.objects.filter(username="Ayman Ahmed", password="Ayman Ahmed@123").first()
         if check:
             pass
     except:
-        user = User.objects.create(username="Ayman Ahmed" , password="Ayman Ahmed@123")
+        user = User.objects.create(username="Ayman Ahmed", password="Ayman Ahmed@123")
         user.save()
-        images_of_cer = images(user = user )
+        images_of_cer = images(user=user)
         images_of_cer.save()
-        codes_ = codes(user = user , monthCode="jdikd2" , yearCode = "owwekdds5")
-        codes_()
+        codes_ = codes(user=user, monthCode="jdikd2", yearCode="owwekdds5")
+        codes_.save()
+
     if request.method == 'POST':
         valueOfPath = request.POST['value-radio']
         pass_code = request.POST.get('passCode')
-        codes_ = codes.objects.get(user__username ='Ayman Ahmed')
+        codes_ = codes.objects.get(user__username='Ayman Ahmed')
         if pass_code == codes_.monthCode:
-            codes_.amountOfMonthUsers+=1
+            codes_.amountOfMonthUsers += 1
         elif pass_code == codes_.yearCode:
-            codes_.amountOfYearUsers+=1
+            codes_.amountOfYearUsers += 1
         codes_.save()
+
         form = TextForm(request.POST)
         if form.is_valid():
             names = form.cleaned_data['text2'].replace('\r\n', '\n').split('\n')
@@ -50,7 +52,7 @@ def home(request):
                 first_name = "No Name Provided"
 
             texts = [form.cleaned_data[f'text{i}'] for i in range(1, 11)]
-            images_= images.objects.get(user__username = "Ayman Ahmed")
+            images_ = images.objects.get(user__username="Ayman Ahmed")
             image_paths = {
                 "c4": images_.tafwoq,
                 "c3": images_.hodor,
@@ -62,22 +64,23 @@ def home(request):
 
             image = Image.open(image_path)
             draw = ImageDraw.Draw(image)
-            
+
             texts[1] = first_name  # Use only the first name here
 
             y_positions = [800, 950, 1200, 1400, 1550, 1700, 2000, 2150, 2000, 2150]
-            fonts = [
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 80),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 150),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 80),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 80),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 80),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 80),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 100),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 85),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 100),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 85),
-                ]
+            font_paths = [
+                "image_editor/fonts/araib/second_font.ttf",
+                "image_editor/fonts/araib/second_font.ttf",
+                "image_editor/fonts/araib/second_font.ttf",
+                "image_editor/fonts/araib/second_font.ttf",
+                "image_editor/fonts/araib/second_font.ttf",
+                "image_editor/fonts/araib/second_font.ttf",
+                "image_editor/fonts/araib/second_font.ttf",
+                "image_editor/fonts/araib/second_font.ttf",
+                "image_editor/fonts/araib/second_font.ttf",
+                "image_editor/fonts/araib/second_font.ttf"
+            ]
+            font_sizes = [80, 150, 80, 80, 80, 80, 100, 85, 100, 85]
             colors = [
                 (0, 0, 0),
                 (0, 131, 117),
@@ -89,11 +92,12 @@ def home(request):
                 (0, 0, 0),
                 (0, 131, 117),
                 (0, 0, 0),
-            ] 
+            ]
             image_width = image.width
 
             # Draw text on the image
-            for i, (text, y_position, font, color) in enumerate(zip(texts, y_positions, fonts, colors)):
+            for i, (text, y_position, font_path, font_size, color) in enumerate(zip(texts, y_positions, font_paths, font_sizes, colors)):
+                font = ImageFont.truetype(font_path, font_size)
                 reshaped_text = arabic_reshaper.reshape(text)  # Reshape the text
                 bidi_text = get_display(reshaped_text)  # Handle bidirectional text
                 words = bidi_text.split(' ')
@@ -104,7 +108,7 @@ def home(request):
                     test_line = current_line + ' ' + word
                     text_bbox = draw.textbbox((0, 0), test_line, font=font)
                     text_width = text_bbox[2] - text_bbox[0]
-                    if text_width <= image_width - 400:  
+                    if text_width <= image_width - 400:
                         current_line = test_line
                     else:
                         lines.append(current_line)
@@ -112,21 +116,29 @@ def home(request):
 
                 lines.append(current_line)
 
+                def get_text_width(text, font):
+                    text_bbox = draw.textbbox((0, 0), text, font=font)
+                    return text_bbox[2] - text_bbox[0]
+
                 if i == len(texts) - 4:
+                    for line in lines:
+                        container_width = get_text_width(texts[len(texts) - 3], ImageFont.truetype(font_paths[len(texts) - 3], font_sizes[len(texts) - 3]))
+                        text_width = get_text_width(line, font)
+                        x_position = (container_width - text_width) // 2 + 150
+                        draw.text((x_position, y_position), line, fill=color, font=font)
+                elif i == len(texts) - 3:
                     for line in lines:
                         x_position = 200
                         draw.text((x_position, y_position), line, fill=color, font=font)
-                elif i == len(texts) - 3 :
+                elif i == len(texts) - 2:
                     for line in lines:
-                        x_position = 250
-                        draw.text((x_position, y_position), line, fill=color, font=font)
-                elif i == len(texts) - 2 :
-                    for line in lines:
-                        x_position = 2700
+                        container_width = get_text_width(texts[len(texts) - 1], ImageFont.truetype(font_paths[len(texts) - 1], font_sizes[len(texts) - 1]))
+                        text_width = get_text_width(line, font)
+                        x_position = (container_width - text_width) // 2 + 2650
                         draw.text((x_position, y_position), line, fill=color, font=font)
                 elif i == len(texts) - 1:
                     for line in lines:
-                        x_position = 2750
+                        x_position = 2700
                         draw.text((x_position, y_position), line, fill=color, font=font)
                 else:
                     for line in lines:
@@ -134,7 +146,7 @@ def home(request):
                         text_width = text_bbox[2] - text_bbox[0]
                         x_position = (image_width - text_width) // 2
                         draw.text((x_position, y_position), line, fill=color, font=font)
-                        y_position += text_bbox[3] - text_bbox[1] + 10 
+                        y_position += text_bbox[3] - text_bbox[1] + 10
 
             response_image = BytesIO()
             image_format = image.format
@@ -292,21 +304,28 @@ def download_from_home(request):
 
                     lines.append(current_line)
 
+                    def get_text_width(text, font):
+                        text_bbox = draw.textbbox((0, 0), text, font=font)
+                        return text_bbox[2] - text_bbox[0]
                     if i == len(texts) - 4:
                         for line in lines:
-                            x_position = 200
+                            container_width = get_text_width(texts[len(texts) - 3], fonts[len(texts) - 3])
+                            text_width = get_text_width(line, font)
+                            x_position = (container_width - text_width) // 2 + 150
                             draw.text((x_position, y_position), line, fill=color, font=font)
                     elif i == len(texts) - 3 :
                         for line in lines:
-                            x_position = 250
+                            x_position = 200
                             draw.text((x_position, y_position), line, fill=color, font=font)
                     elif i == len(texts) - 2 :
                         for line in lines:
-                            x_position = 2700
+                            container_width = get_text_width(texts[len(texts) - 1], fonts[len(texts) - 1])
+                            text_width = get_text_width(line, font)
+                            x_position = (container_width - text_width) // 2 + 2650
                             draw.text((x_position, y_position), line, fill=color, font=font)
                     elif i == len(texts) - 1:
                         for line in lines:
-                            x_position = 2750
+                            x_position = 2700
                             draw.text((x_position, y_position), line, fill=color, font=font)
                     else:
                         for line in lines:
@@ -454,22 +473,28 @@ def homeTagreba(request):
                         current_line = word
 
                 lines.append(current_line)
-
+                def get_text_width(text, font):
+                    text_bbox = draw.textbbox((0, 0), text, font=font)
+                    return text_bbox[2] - text_bbox[0]
                 if i == len(texts) - 5:
                     for line in lines:
-                        x_position = 200
+                        container_width = get_text_width(texts[len(texts) - 4], fonts[len(texts) - 4])
+                        text_width = get_text_width(line, font)
+                        x_position = (container_width - text_width) // 2 + 150
                         draw.text((x_position, y_position), line, fill=color, font=font)
                 elif i == len(texts) - 4 :
                     for line in lines:
-                        x_position = 250
+                        x_position = 200
                         draw.text((x_position, y_position), line, fill=color, font=font)
                 elif i == len(texts) - 3 :
                     for line in lines:
-                        x_position = 2700
+                        container_width = get_text_width(texts[len(texts) - 2], fonts[len(texts) - 2])
+                        text_width = get_text_width(line, font)
+                        x_position = (container_width - text_width) // 2 + 2650
                         draw.text((x_position, y_position), line, fill=color, font=font)
                 elif i == len(texts) - 2:
                     for line in lines:
-                        x_position = 2750
+                        x_position = 2700
                         draw.text((x_position, y_position), line, fill=color, font=font)
                 elif i == len(texts) - 1:
                     for line in lines:
@@ -579,21 +604,28 @@ def download_from_homeTagreba(request):
 
                     lines.append(current_line)
 
+                    def get_text_width(text, font):
+                        text_bbox = draw.textbbox((0, 0), text, font=font)
+                        return text_bbox[2] - text_bbox[0]
                     if i == len(texts) - 5:
                         for line in lines:
-                            x_position = 200
+                            container_width = get_text_width(texts[len(texts) - 4], fonts[len(texts) - 4])
+                            text_width = get_text_width(line, font)
+                            x_position = (container_width - text_width) // 2 + 150
                             draw.text((x_position, y_position), line, fill=color, font=font)
                     elif i == len(texts) - 4 :
                         for line in lines:
-                            x_position = 250
+                            x_position = 200
                             draw.text((x_position, y_position), line, fill=color, font=font)
                     elif i == len(texts) - 3 :
                         for line in lines:
-                            x_position = 2700
+                            container_width = get_text_width(texts[len(texts) - 2], fonts[len(texts) - 2])
+                            text_width = get_text_width(line, font)
+                            x_position = (container_width - text_width) // 2 + 2650
                             draw.text((x_position, y_position), line, fill=color, font=font)
                     elif i == len(texts) - 2:
                         for line in lines:
-                            x_position = 2750
+                            x_position = 2700
                             draw.text((x_position, y_position), line, fill=color, font=font)
                     elif i == len(texts) - 1:
                         for line in lines:
