@@ -118,11 +118,12 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 MEDIA_URL = '/media/'
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'dg5mbsrhk',  
-    'API_KEY': '267273763879832', 
-    'API_SECRET': '0XrqeDa--90Jkmh93Br5JO79EMk'
-}
+cloudinary.config(
+    cloud_name="dg5mbsrhk",
+    api_key="267273763879832",
+    api_secret="0XrqeDa--90Jkmh93Br5JO79EMk",
+    secure=True,
+)
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
