@@ -22,7 +22,7 @@ class UploadedImage(models.Model):
     text10 = models.CharField(max_length=100)
 class images(models.Model):
     user = models.ForeignKey(User , on_delete=models.CASCADE)
-    Shokr = models.ImageField(upload_to='images/' , default='images/ce_4.jpg')
+    Shokr = models.ImageField(upload_to='' , default='images/ce_4.jpg')
     tahnqa = models.ImageField(upload_to='images/', default='images/ce_3.jpg')
     hodor = models.ImageField(upload_to='images/', default='images/ce_1.jpg')
     tafwoq = models.ImageField(upload_to='images/', default='images/ce_2.jpg')
