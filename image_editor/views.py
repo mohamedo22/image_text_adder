@@ -18,30 +18,28 @@ from PIL import Image
 from zipfile import ZipFile
 from .models import *
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import JsonResponse
+from datetime import datetime, timedelta
 def home(request):
     try:
-        check = User.objects.filter(username="Ayman Ahmed", password="Ayman Ahmed@123").first()
+        check = User.objects.filter(username="Ayman Ahmed" , password="Ayman Ahmed@123").first
         if check:
             pass
     except:
-        user = User.objects.create(username="Ayman Ahmed", password="Ayman Ahmed@123")
+        user = User.objects.create(username="Ayman Ahmed" , password="Ayman Ahmed@123")
         user.save()
-        images_of_cer = images(user=user)
+        images_of_cer = images(user = user )
         images_of_cer.save()
-        codes_ = codes(user=user, monthCode="jdikd2", yearCode="owwekdds5")
-        codes_.save()
-
     if request.method == 'POST':
         valueOfPath = request.POST['value-radio']
         pass_code = request.POST.get('passCode')
-        codes_ = codes.objects.get(user__username='Ayman Ahmed')
+        codes_ = codes.objects.get(user__username ='Ayman Ahmed')
         if pass_code == codes_.monthCode:
-            codes_.amountOfMonthUsers += 1
+            codes_.amountOfMonthUsers+=1
         elif pass_code == codes_.yearCode:
-            codes_.amountOfYearUsers += 1
+            codes_.amountOfYearUsers+=1
         codes_.save()
-
         form = TextForm(request.POST)
         if form.is_valid():
             names = form.cleaned_data['text2'].replace('\r\n', '\n').split('\n')
@@ -52,7 +50,7 @@ def home(request):
                 first_name = "No Name Provided"
 
             texts = [form.cleaned_data[f'text{i}'] for i in range(1, 11)]
-            images_ = images.objects.get(user__username="Ayman Ahmed")
+            images_= images.objects.get(user__username = "Ayman Ahmed")
             image_paths = {
                 "c4": images_.tafwoq,
                 "c3": images_.hodor,
@@ -61,26 +59,25 @@ def home(request):
             }
             image_path = image_paths.get(valueOfPath, 'image_editor/images/default.jpeg')
             images_base64 = []
-
             image = Image.open(image_path)
-            draw = ImageDraw.Draw(image)
-
+            new_size = (3514, 2478)
+            resized_image = image.resize(new_size, Image.Resampling.LANCZOS)
+            draw = ImageDraw.Draw(resized_image)
             texts[1] = first_name  # Use only the first name here
 
             y_positions = [800, 950, 1200, 1400, 1550, 1700, 2000, 2150, 2000, 2150]
-            font_paths = [
-                "image_editor/fonts/araib/second_font.ttf",
-                "image_editor/fonts/araib/second_font.ttf",
-                "image_editor/fonts/araib/second_font.ttf",
-                "image_editor/fonts/araib/second_font.ttf",
-                "image_editor/fonts/araib/second_font.ttf",
-                "image_editor/fonts/araib/second_font.ttf",
-                "image_editor/fonts/araib/second_font.ttf",
-                "image_editor/fonts/araib/second_font.ttf",
-                "image_editor/fonts/araib/second_font.ttf",
-                "image_editor/fonts/araib/second_font.ttf"
-            ]
-            font_sizes = [80, 150, 80, 80, 80, 80, 100, 85, 100, 85]
+            fonts = [
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 150),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 100),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 85),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 100),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 85),
+                ]
             colors = [
                 (0, 0, 0),
                 (0, 131, 117),
@@ -92,12 +89,11 @@ def home(request):
                 (0, 0, 0),
                 (0, 131, 117),
                 (0, 0, 0),
-            ]
-            image_width = image.width
+            ] 
+            image_width = resized_image.width
 
             # Draw text on the image
-            for i, (text, y_position, font_path, font_size, color) in enumerate(zip(texts, y_positions, font_paths, font_sizes, colors)):
-                font = ImageFont.truetype(font_path, font_size)
+            for i, (text, y_position, font, color) in enumerate(zip(texts, y_positions, fonts, colors)):
                 reshaped_text = arabic_reshaper.reshape(text)  # Reshape the text
                 bidi_text = get_display(reshaped_text)  # Handle bidirectional text
                 words = bidi_text.split(' ')
@@ -108,7 +104,7 @@ def home(request):
                     test_line = current_line + ' ' + word
                     text_bbox = draw.textbbox((0, 0), test_line, font=font)
                     text_width = text_bbox[2] - text_bbox[0]
-                    if text_width <= image_width - 400:
+                    if text_width <= image_width - 400:  
                         current_line = test_line
                     else:
                         lines.append(current_line)
@@ -117,48 +113,48 @@ def home(request):
                 lines.append(current_line)
 
                 def get_text_width(text, font):
-                    text_bbox = draw.textbbox((0, 0), text, font=font)
-                    return text_bbox[2] - text_bbox[0]
-
+                        text_bbox = draw.textbbox((0, 0), text, font=font)
+                        return (text_bbox[2] - text_bbox[0])
                 if i == len(texts) - 4:
-                    for line in lines:
-                        container_width = get_text_width(texts[len(texts) - 3], ImageFont.truetype(font_paths[len(texts) - 3], font_sizes[len(texts) - 3]))
-                        text_width = get_text_width(line, font)
-                        x_position = (container_width - text_width) // 2 + 150
-                        draw.text((x_position, y_position), line, fill=color, font=font)
-                elif i == len(texts) - 3:
-                    for line in lines:
-                        x_position = 200
-                        draw.text((x_position, y_position), line, fill=color, font=font)
-                elif i == len(texts) - 2:
-                    for line in lines:
-                        container_width = get_text_width(texts[len(texts) - 1], ImageFont.truetype(font_paths[len(texts) - 1], font_sizes[len(texts) - 1]))
-                        text_width = get_text_width(line, font)
-                        x_position = (container_width - text_width) // 2 + 2650
-                        draw.text((x_position, y_position), line, fill=color, font=font)
+                        for line in lines:
+                            container_width = get_text_width(texts[len(texts) - 3], fonts[len(texts) - 3])
+                            text_width = get_text_width(line, font)
+                            x_position = (container_width - text_width) // 2 + 400
+                            draw.text((x_position, y_position), line, fill=color, font=font)
+                elif i == len(texts) - 3 :
+                        for line in lines:
+                            x_position = 400
+                            draw.text((x_position, y_position), line, fill=color, font=font)
+                elif i == len(texts) - 2 :
+                        for line in lines:
+                            container_width = get_text_width(texts[len(texts) - 1], fonts[len(texts) - 1])
+                            text_width = get_text_width(line, font)
+                            x_position = (container_width - text_width) // 2 + 2400
+                            draw.text((x_position, y_position), line, fill=color, font=font)
                 elif i == len(texts) - 1:
-                    for line in lines:
-                        x_position = 2700
-                        draw.text((x_position, y_position), line, fill=color, font=font)
+                        for line in lines:
+                            x_position = 2500
+                            draw.text((x_position, y_position), line, fill=color, font=font)
                 else:
                     for line in lines:
                         text_bbox = draw.textbbox((0, 0), line, font=font)
                         text_width = text_bbox[2] - text_bbox[0]
                         x_position = (image_width - text_width) // 2
                         draw.text((x_position, y_position), line, fill=color, font=font)
-                        y_position += text_bbox[3] - text_bbox[1] + 10
+                        y_position += text_bbox[3] - text_bbox[1] + 10 
 
             response_image = BytesIO()
             image_format = image.format
-            image.save(response_image, format=image_format)
+            resized_image.save(response_image, format=image_format)
             response_image.seek(0)
             image_base64 = base64.b64encode(response_image.getvalue()).decode('UTF-8')
             images_base64.append(image_base64)
 
             request.session['images'] = images_base64
             request.session['names'] = [first_name]
-
-            return render(request, 'pdf_template.html', {'image': images_base64[0], 'names': [first_name]})
+            image_data = base64.b64decode(images_base64[0])
+            # return render(request, 'pdf_template.html', {'image': images_base64[0], 'names': [first_name]})
+            return HttpResponse(image_data , content_type='image/jpeg')
     else:
         form = TextForm()
     return render(request, 'upload_image.html', {'form': form})
@@ -223,8 +219,6 @@ def download_from_home(request):
         user.save()
         images_of_cer = images(user = user )
         images_of_cer.save()
-        codes_ = codes(user = user , monthCode="jdikd2" , yearCode = "owwekdds5")
-        codes_.save()
     if request.method == 'POST':
         valueOfPath = request.POST['value-radio']
         pass_code = request.POST.get('passCode')
@@ -251,7 +245,9 @@ def download_from_home(request):
             counter = 0
             for name in names:
                 image = Image.open(image_path)
-                draw = ImageDraw.Draw(image)
+                new_size = (3514, 2478)
+                resized_image = image.resize(new_size, Image.Resampling.LANCZOS)
+                draw = ImageDraw.Draw(resized_image)
 
                 # Update the second text with the name
                 texts[1] = name
@@ -259,15 +255,15 @@ def download_from_home(request):
                 # Define positions, fonts, colors, and sizes for each text
                 y_positions = [800, 950, 1200, 1400, 1550, 1700, 2000, 2150, 2000, 2150]
                 fonts = [
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 70),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 150),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 70),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 70),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 70),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 70),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 85),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 75),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 85),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 75),
                 ]
                 colors = [
@@ -282,7 +278,7 @@ def download_from_home(request):
                     (0, 131, 117),
                     (0, 0, 0),
                 ] 
-                image_width = image.width
+                image_width = resized_image.width
 
                 # Draw text on the image
                 for i, (text, y_position, font, color) in enumerate(zip(texts, y_positions, fonts, colors)):
@@ -336,7 +332,7 @@ def download_from_home(request):
                             y_position += text_bbox[3] - text_bbox[1] + 10 
 
                 response_image = BytesIO()
-                image.save(response_image, 'JPEG')
+                resized_image.save(response_image, 'JPEG')
                 response_image.seek(0)
                 image_base64 = base64.b64encode(response_image.getvalue()).decode('UTF-8')
                 images_base64.append(image_base64)
@@ -397,8 +393,6 @@ def homeTagreba(request):
         user.save()
         images_of_cer = images(user = user )
         images_of_cer.save()
-        codes_ = codes(user = user , monthCode="jdikd2" , yearCode = "owwekdds5")
-        codes_()
     if request.method == 'POST':
         valueOfPath = request.POST['value-radio']
         form = TextForm(request.POST)
@@ -421,18 +415,20 @@ def homeTagreba(request):
             images_base64 = []
 
             image = Image.open(image_path)
-            draw = ImageDraw.Draw(image)
+            new_size = (3514, 2478)
+            resized_image = image.resize(new_size, Image.Resampling.LANCZOS)
+            draw = ImageDraw.Draw(resized_image)
             
             texts[1] = first_name 
             
             y_positions = [800, 950, 1200, 1400, 1550, 1700, 2000, 2150, 2000, 2150,500]
             fonts = [
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 80),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 150),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 80),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 80),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 80),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 80),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 100),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 85),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 100),
@@ -452,7 +448,7 @@ def homeTagreba(request):
                 (0, 0, 0),
                 (230,0,0),
             ] 
-            image_width = image.width
+            image_width = resized_image.width
 
             # Draw text on the image
             for i, (text, y_position, font, color) in enumerate(zip(texts, y_positions, fonts, colors)):
@@ -480,21 +476,21 @@ def homeTagreba(request):
                     for line in lines:
                         container_width = get_text_width(texts[len(texts) - 4], fonts[len(texts) - 4])
                         text_width = get_text_width(line, font)
-                        x_position = (container_width - text_width) // 2 + 150
+                        x_position = (container_width - text_width) // 2 + 450
                         draw.text((x_position, y_position), line, fill=color, font=font)
                 elif i == len(texts) - 4 :
                     for line in lines:
-                        x_position = 200
+                        x_position = 400
                         draw.text((x_position, y_position), line, fill=color, font=font)
                 elif i == len(texts) - 3 :
                     for line in lines:
                         container_width = get_text_width(texts[len(texts) - 2], fonts[len(texts) - 2])
                         text_width = get_text_width(line, font)
-                        x_position = (container_width - text_width) // 2 + 2650
+                        x_position = (container_width - text_width) // 2 + 2400
                         draw.text((x_position, y_position), line, fill=color, font=font)
                 elif i == len(texts) - 2:
                     for line in lines:
-                        x_position = 2700
+                        x_position = 2500
                         draw.text((x_position, y_position), line, fill=color, font=font)
                 elif i == len(texts) - 1:
                     for line in lines:
@@ -510,7 +506,7 @@ def homeTagreba(request):
 
             response_image = BytesIO()
             image_format = image.format
-            image.save(response_image, format=image_format)
+            resized_image.save(response_image, format=image_format)
             response_image.seek(0)
             image_base64 = base64.b64encode(response_image.getvalue()).decode('UTF-8')
             images_base64.append(image_base64)
@@ -518,7 +514,9 @@ def homeTagreba(request):
             request.session['images'] = images_base64
             request.session['names'] = [first_name]
 
-            return render(request, 'pdf_template.html', {'image': images_base64[0], 'names': [first_name]})
+            # return render(request, 'pdf_template.html', {'image': images_base64[0], 'names': [first_name]})
+            image_data = base64.b64decode(images_base64[0])
+            return HttpResponse(image_data , content_type = 'image/jpeg')
     form = TextForm()
     return render(request, 'tgreba.html', {'form': form})
 def download_from_homeTagreba(request):
@@ -531,8 +529,6 @@ def download_from_homeTagreba(request):
         user.save()
         images_of_cer = images(user = user )
         images_of_cer.save()
-        codes_ = codes(user = user , monthCode="jdikd2" , yearCode = "owwekdds5")
-        codes_.save()
     if request.method == 'POST':
         valueOfPath = request.POST['value-radio']
         form = TextForm(request.POST)
@@ -543,29 +539,31 @@ def download_from_homeTagreba(request):
             texts.append('**منتج خدمة تجريبية ')
             images_= images.objects.get(user__username = "Ayman Ahmed")
             image_paths = {
-                "c2": 'media/images/thnqaFree.jpg',
-                "c1": 'media/images/shqrFree.jpg',
+                "c2": images_.tahnqa,
+                "c1": images_.Shokr,
             }
             image_path = image_paths.get(valueOfPath, 'image_editor/images/default.jpeg')
             images_base64 = []
             counter = 0
             for name in names:
                 image = Image.open(image_path)
-                draw = ImageDraw.Draw(image)
+                new_size = (3514, 2478)
+                resized_image = image.resize(new_size, Image.Resampling.LANCZOS)
+                draw = ImageDraw.Draw(resized_image)
 
                 texts[1] = name
 
                 y_positions = [800, 950, 1200, 1400, 1550, 1700, 2000, 2150, 2000, 2150,500]
                 fonts = [
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 70),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 150),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 70),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 70),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 70),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 70),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 85),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 75),
-                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
+                    ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 85),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 75),
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 70),
                 ]
@@ -582,7 +580,7 @@ def download_from_homeTagreba(request):
                     (0, 0, 0),
                     (230,0,0)
                 ] 
-                image_width = image.width
+                image_width = resized_image.width
 
                 # Draw text on the image
                 for i, (text, y_position, font, color) in enumerate(zip(texts, y_positions, fonts, colors)):
@@ -642,7 +640,7 @@ def download_from_homeTagreba(request):
                             y_position += text_bbox[3] - text_bbox[1] + 10  # Move to next line position with some spacing
 
                 response_image = BytesIO()
-                image.save(response_image, 'JPEG')
+                resized_image.save(response_image, 'JPEG')
                 response_image.seek(0)
                 image_base64 = base64.b64encode(response_image.getvalue()).decode('UTF-8')
                 images_base64.append(image_base64)
@@ -701,8 +699,6 @@ def loginAdmin(request):
         user.save()
         images_of_cer = images(user=user)
         images_of_cer.save()
-        codes_ = codes(user=user, monthCode="jdikd2", yearCode="owwekdds5")
-        codes_.save()
 
     if request.method == 'POST':
         username = request.POST['username']
@@ -719,28 +715,49 @@ def loginAdmin(request):
 def adminHome(request):
     user = request.user
     images_ = images.objects.get(user = user)
-    codes_ = codes.objects.get(user = user)
+    queryset = codes.objects.order_by('date_of_creation')
+    page = request.GET.get('page', 1)
+    paginator = Paginator(queryset, 10)
+    try:
+        codes_ = paginator.page(page)
+    except PageNotAnInteger:
+        codes_ = paginator.page(1)
+    except EmptyPage:
+        codes_ = paginator.page(paginator.num_pages)
+    
+    amount_of_year_users = 0
+    amount_of_month_users = 0
+    codesForCount = codes.objects.all()
+    for code in codesForCount:
+        if code.type_code == 'month':
+            amount_of_month_users += code.amountOfUsers
+        else:
+            amount_of_year_users += code.amountOfUsers
+    print(codes_)
     context = {
-        'images':images_,
-        'codes':codes_
+        'images': images_,
+        'codes': codes_,
+        'amountOfYearUsers': amount_of_year_users,
+        'amountOfMonthUsers': amount_of_month_users,
     }
-    return render(request , 'adminHome.html' , context)
+    return render(request, 'adminHome.html', context)
 def change_codes(request):
     if request.method == 'POST':
-        codes_ = codes.objects.get(user=request.user)
-        yearCode = request.POST['yearCode']
-        activeYear = request.POST.get('activeYear')
-        monthCode = request.POST['monthCode']
-        activeMonth = request.POST.get('activeMonth')
-        activeYear = True if activeYear == 'on' else False
-        activeMonth = True if activeMonth == 'on' else False
-
-        codes_.monthCode = monthCode
-        codes_.yearCode = yearCode
-        codes_.yearActive = activeYear
-        codes_.monthActive = activeMonth
-        codes_.save()
-        return redirect(request.META.get('HTTP_REFERER', '/'))
+        pk = request.POST.get('pk')
+        code_text = request.POST.get('code')
+        active = request.POST.get('active')
+        code = codes.objects.get(pk = pk)
+        code.code = code_text
+        code.active = True if active == 'on' else False
+        code.save()
+        return redirect(adminHome)
+    return HttpResponse(status=204)
+def delete_code(request):
+    if request.method == 'POST':
+        pk = request.POST.get('pk')
+        code = codes.objects.get(pk = pk)
+        code.delete()
+        return redirect(adminHome)
     return HttpResponse(status=204)
 def change_images(request):
     if request.method == 'POST':
@@ -761,15 +778,36 @@ def change_images(request):
         return redirect(adminHome)
     return HttpResponse(status=204)
 def check_code(request):
-    code = request.GET.get('code')
-    print(code)
-    codes_ = codes.objects.get(user__username ='Ayman Ahmed')
+    code_ = request.GET.get('code')
     data = {'valid':False}
-    if codes_.monthActive:
-        if codes_.monthCode == code: 
-            data['valid'] = True
-    if codes_.yearActive:
-        if codes_.yearCode == code:
-            data['valid'] = True
-    codes_.save()
+    try:
+        check = codes.objects.filter(code = code_).first()
+        if check:
+            now_date = datetime.now().date()
+            if now_date < check.date_of_end.date() :
+                if check.active:
+                    data['valid'] = True
+                else:
+                    print("code not active")
+            else:
+                print('code is expired ')
+        else:
+            print('code not found')
+    except AttributeError as e:
+        print(f"AttributeError: {e}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
     return JsonResponse(data)
+def create_code(request):
+    if request.method == 'POST':
+        code_text = request.POST.get('code')
+        value_radio = request.POST.get('value-radio')
+        if value_radio == 'month':
+            code_creation = codes(code = code_text , type_code = 'month' )
+            code_creation.date_of_end = datetime.now() + timedelta(days=30)
+        elif value_radio == 'year':
+            code_creation = codes(code = code_text , type_code = 'year' )
+            code_creation.date_of_end = datetime.now() + timedelta(days=365)
+        code_creation.save()
+        return redirect(adminHome)
+    return HttpResponse(status=204)

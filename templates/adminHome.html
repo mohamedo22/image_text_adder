@@ -366,6 +366,207 @@
                 gap:2rem;
                 align-items:center;
               }
+              .table {
+                width: 80%;
+                border-collapse: collapse;
+                margin: auto;
+                font-size: 16px;
+                font-family: 'Arial', sans-serif;
+                color: #333;
+                background-color: #f9f9f9;
+                box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+            }
+            
+            .table thead {
+                background-color: #007bff;
+                color: white;
+            }
+            
+            .table thead th {
+                padding: 12px 15px;
+                text-align: center;
+            }
+            
+            .table tbody tr {
+                border-bottom: 1px solid #dddddd;
+            }
+            
+            .table tbody tr:nth-of-type(even) {
+                background-color: #f3f3f3;
+            }
+            
+            .table tbody td {
+                padding: 12px .5rem;
+            }
+            
+            .table tbody tr:hover {
+                background-color: #e9ecef;
+            }
+            
+            /* Input and Button Styling */
+            .form-control {
+                width: 100%;
+                padding: 8px;
+                margin: 2px 0;
+                box-sizing: border-box;
+                border: 1px solid #ced4da;
+                border-radius: 4px;
+                font-size: 14px;
+                color: #495057;
+            }
+            
+            .form-control[type="checkbox"] {
+                width: auto;
+                margin: 0 auto;
+            }
+            
+            .btn {
+                background-color: #007bff;
+                color: white;
+                padding: 10px 15px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+            
+            .btn:hover {
+                background-color: #0056b3;
+            }
+            
+            /* Pagination Styling */
+            .pagination {
+                display: flex;
+                justify-content: center;
+                padding: 20px 0;
+                list-style: none;
+            }
+            
+            .page-item {
+                margin: 0 5px;
+                
+            }
+            
+            .page-link {
+                color: #007bff;
+                padding: 8px 16px;
+                text-decoration: none;
+                border: 1px solid #ced4da;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.3s ease, color 0.3s ease;
+            }
+            
+            .page-link:hover {
+                background-color: #007bff;
+                color: white;
+            }
+            
+            .page-item.active .page-link {
+                background-color: #007bff;
+                color: white;
+                border-color: #007bff;
+                
+            }
+            .page-item.disabled{
+              cursor: not-allowed;
+          }
+            .page-item.disabled .page-link {
+                color: #ced4da;
+                cursor: not-allowed;
+            }
+            .radio-input {
+              display: flex;
+              flex-direction: row;
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+              font-size: 16px;
+              font-weight: 600;
+              color: white;
+              gap:2rem;
+              margin:2rem 0rem;
+              margin-left:1rem;
+            }
+            
+            .radio-input input[type="radio"] {
+              display: none;
+            }
+            
+            .radio-input label {
+              display: flex;
+              align-items: center;
+              padding: 10px;
+              background-color: transparent;
+              border-radius: 5px;
+              margin-right: 12px;
+              cursor: pointer;
+              position: relative;
+              transition: all 0.3s ease-in-out;
+              color:black;
+            }
+            
+            .radio-input label:before {
+              content: "";
+              display: block;
+              position: absolute;
+              top: 50%;
+              right: -2rem;
+              transform: translate(-50%, -50%);
+              width: 10px;
+              height: 10px;
+              border-radius: 50%;
+              background-color: #fff;
+              border: 2px solid #ccc;
+              transition: all 0.3s ease-in-out;
+            }
+            
+            .radio-input input[type="radio"]:checked + label:before {
+              background-color: rgb(13,169,166);
+            }
+            .formOfAddCode {
+              max-width: 400px;
+              margin: 50px auto;
+              padding: 20px;
+              border: 1px solid #ccc;
+              border-radius: 10px;
+              box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+              background-color: #f9f9f9;
+          }
+  
+          .formOfAddCode form {
+              display: flex;
+              flex-direction: column;
+              align-items:center;
+          }
+  
+          .formOfAddCode input[type="text"] {
+              padding: 10px;
+              border: 1px solid #ccc;
+              border-radius: 5px;
+              outline:1px solid transparent;
+              transition:all 700ms;
+              width: 15rem;
+              height:3rem;
+          }
+            input[type="text"]:focus
+            {
+                outline-color:rgb(7,168,105);
+            }
+          button {
+            padding: 10px 20px;
+            background-color: rgb(13,169,166);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: fit-content;
+            display:flex;
+            align-items:center;
+            gap:1rem;
+        }
+        
+        button:hover {
+            background-color: rgb(61,126,185);
+        }
           @media screen and (max-width:800px) {
             .Btn
             {
@@ -410,44 +611,104 @@
         <canvas id="myPieChart"></canvas>
     </div>
     <div class="secondSection">
-        <form method='post' class="formOfCodes" action="{% url 'changeCodes' %}">
-            {% csrf_token %}
-            <div class="row">
-                <label for="codeOfyear">كود المستخدميين السنويين</label>
-                <input type="text" name="yearCode" id="codeOfyear" value="{{codes.yearCode}}">
-            </div>
-            <div class="row">
-                <label for="cbx-51">تفعيل الخدمة</label>
-                <div class="checkbox-wrapper-51">
-                    <input id="cbx-51" type="checkbox" name="activeYear" {% if codes.yearActive %}checked{% endif %}>
-                    <label class="toggle" for="cbx-51">
-                    <span>
-                        <svg viewBox="0 0 10 10" height="10px" width="10px">
-                        <path d="M5,1 L5,1 C2.790861,1 1,2.790861 1,5 L1,5 C1,7.209139 2.790861,9 5,9 L5,9 C7.209139,9 9,7.209139 9,5 L9,5 C9,2.790861 7.209139,1 5,1 L5,9 L5,1 Z"></path>
-                        </svg>
-                    </span>
-                    </label>
-                </div>
-            </div>
-            <div class="row">
-                <label for="codeOfmonth">كود المستخدميين الشهريين</label>
-                <input type="text" name="monthCode" id="codeOfmonth" value="{{codes.monthCode}}">
-            </div>
-           <div class="row">
-                <label for="cbx-52">تفعيل الخدمة</label>
-                <div class="checkbox-wrapper-51">
-                    <input id="cbx-52" type="checkbox" name="activeMonth" {% if codes.monthActive %}checked{% endif %}>
-                    <label class="toggle" for="cbx-52">
-                    <span>
-                        <svg viewBox="0 0 10 10" height="10px" width="10px">
-                        <path d="M5,1 L5,1 C2.790861,1 1,2.790861 1,5 L1,5 C1,7.209139 2.790861,9 5,9 L5,9 C7.209139,9 9,7.209139 9,5 L9,5 C9,2.790861 7.209139,1 5,1 L5,9 L5,1 Z"></path>
-                        </svg>
-                    </span>
-                    </label>
-                </div>
-            </div> 
-            <button type="submit">حفظ التغييرات</button>
+      <div class="formOfAddCode">
+        <form  method="post" action="{% url "create_code" %}">
+          {% csrf_token %}
+          <input type="text" name="code" id="" placeholder="اكتب الكود هنا">
+          <div class="radio-input">
+            <input value="month" name="value-radio" id="value-1" type="radio" required >
+            <label for="value-1"> كود شهري</label>
+            <input value="year" name="value-radio" id="value-2" type="radio" required >
+            <label for="value-2">كود سنوي</label>
+          </div>
+          <button type="submit">حفظ</button>
         </form>
+      </div>
+      <table class="table">
+      <thead class="thead-dark">
+      <tr>
+          <th>Code</th>
+          <th>Active</th>
+          <th>Type Code</th>
+          <th>Amount of Users</th>
+          <th>Date of Creation</th>
+          <th>Date of End</th>
+          <th>Action</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for code in codes %}
+      <tr>
+          <form method="post" >
+              {% csrf_token %}
+              <input type="hidden" name="pk" value="{{code.pk}}">
+              <td><input type="text" name="code" class="form-control" value="{{ code.code }}"></td>
+              <td>
+                <div class="row">
+                    <div class="checkbox-wrapper-51">
+                        <input id="cbx-{{code.pk}}" type="checkbox" name="active" {% if code.active %}checked{% endif %}>
+                        <label class="toggle" for="cbx-{{code.pk}}">
+                        <span>
+                            <svg viewBox="0 0 10 10" height="10px" width="10px">
+                            <path d="M5,1 L5,1 C2.790861,1 1,2.790861 1,5 L1,5 C1,7.209139 2.790861,9 5,9 L5,9 C7.209139,9 9,7.209139 9,5 L9,5 C9,2.790861 7.209139,1 5,1 L5,9 L5,1 Z"></path>
+                            </svg>
+                        </span>
+                        </label>
+                    </div>
+                </div> 
+              </td>
+              <td><p>{{ code.type_code }}</p></td>
+              <td><p>{{ code.amountOfUsers }}</p></td>
+              <td><p>{{ code.date_of_creation }}</p></td>
+              <td><p>{{ code.date_of_end }}</p></td>
+              <td style="display: flex; gap:.2rem;">
+                <button type="submit" formaction="{% url 'deleteCode' %}" class="btn">حذف الكود</button>
+                <button type="submit" formaction="{% url 'changeCodes' %}"  class="btn">حفظ التعديلات</button>
+              </td>
+          </form>
+      </tr>
+      {% endfor %}
+      </tbody>
+  </table>
+
+    <nav aria-label="Codes pagination" class="mb-4">
+      <ul class="pagination">
+        {% if codes.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ codes.previous_page_number }}">Previous</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">Previous</span>
+          </li>
+        {% endif %}
+
+        {% for page_num in codes.paginator.page_range %}
+          {% if codes.number == page_num %}
+            <li class="page-item active">
+              <span class="page-link">
+                {{ page_num }}
+                <span class="sr-only">(current)</span>
+              </span>
+            </li>
+          {% else %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+
+        {% if codes.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ codes.next_page_number }}">Next</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">Next</span>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
     </div>
     <div class="thirdSection">
         <form method='post' class="MainContainerOfImages"  enctype="multipart/form-data" action="{% url "changeImages" %}">
@@ -551,7 +812,7 @@
                 labels: ['المستخدمين الشهريين', 'المستخدمين السنويين'],
                 datasets: [{
                     label: '# الأحصائيات',
-                    data: [{{codes.amountOfMonthUsers}}, {{codes.amountOfYearUsers}}],
+                    data: [{{amount_of_month_users}}, {{amount_of_year_users}}],
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)',

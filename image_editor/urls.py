@@ -12,6 +12,8 @@ urlpatterns = [
     path('settings/change_password/',PasswordChangeView.as_view(template_name='change_password.html'),name='password_change'),
     path('settings/change_password/done/', PasswordChangeDoneView.as_view(template_name = 'changeDone.html'), name='password_change_done'),
     path('change_codes/', views.change_codes, name='changeCodes'),
+    path('delete_code/', views.delete_code, name='deleteCode'),
+    path('create_code/', views.create_code, name='create_code'),
     path('change_images/', views.change_images, name='changeImages'),
     path('check_code/', views.check_code, name='checkValidCode'),
     path('try_service/', views.homeTagreba, name='tryService'),
