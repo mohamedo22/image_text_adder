@@ -34,12 +34,16 @@ def home(request):
     if request.method == 'POST':
         valueOfPath = request.POST['value-radio']
         pass_code = request.POST.get('passCode')
-        codes_ = codes.objects.get(user__username ='Ayman Ahmed')
-        if pass_code == codes_.monthCode:
-            codes_.amountOfMonthUsers+=1
-        elif pass_code == codes_.yearCode:
-            codes_.amountOfYearUsers+=1
-        codes_.save()
+        code_ = codes.objects.get(code = pass_code)
+        if code_.type_code == 'month':
+            if not request.session.get('month',False):
+                code_.amountOfUsers +=1
+                request.session['month'] = True
+        elif code_.type_code == 'year':
+              if not request.session.get('year',False):
+                code_.amountOfUsers +=1
+                request.session['year'] = True
+        code_.save()
         form = TextForm(request.POST)
         if form.is_valid():
             names = form.cleaned_data['text2'].replace('\r\n', '\n').split('\n')
@@ -222,12 +226,16 @@ def download_from_home(request):
     if request.method == 'POST':
         valueOfPath = request.POST['value-radio']
         pass_code = request.POST.get('passCode')
-        codes_ = codes.objects.get(user__username ='Ayman Ahmed')
-        if pass_code == codes_.monthCode:
-            codes_.amountOfMonthUsers+=1
-        elif pass_code == codes_.yearCode:
-            codes_.amountOfYearUsers+=1
-        codes_.save()
+        code_ = codes.objects.get(code = pass_code)
+        if code_.type_code == 'month':
+            if request.session['month'] == False:
+                request.session['month'] = True
+                code_.amountOfUsers+=1
+        elif code_.type_code == 'year':
+            if request.session['year'] == False:
+                request.session['year'] = True
+                code_.amountOfUsers+=1
+        code_.save()
         form = TextForm(request.POST)
         if form.is_valid():
             names = form.cleaned_data['text2'].replace('\r\n', '\n').split('\n')
@@ -733,7 +741,8 @@ def adminHome(request):
             amount_of_month_users += code.amountOfUsers
         else:
             amount_of_year_users += code.amountOfUsers
-    print(codes_)
+    print(amount_of_month_users)
+    print(amount_of_year_users)
     context = {
         'images': images_,
         'codes': codes_,
