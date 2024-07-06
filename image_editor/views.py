@@ -112,6 +112,8 @@ def home(request):
                         current_line = test_line
                     else:
                         lines.append(current_line)
+                        y_positions[i+1]+=100
+                        y_positions[i+2] = y_positions[i+1]+100
                         current_line = word
 
                 lines.append(current_line)
@@ -304,6 +306,8 @@ def download_from_home(request):
                             current_line = test_line
                         else:
                             lines.append(current_line)
+                            y_positions[i+1]+=100
+                            y_positions[i+2] = y_positions[i+1]+100
                             current_line = word
 
                     lines.append(current_line)
@@ -474,6 +478,8 @@ def homeTagreba(request):
                         current_line = test_line
                     else:
                         lines.append(current_line)
+                        y_positions[i+1]+=100
+                        y_positions[i+2] = y_positions[i+1]+100
                         current_line = word
 
                 lines.append(current_line)
@@ -484,7 +490,7 @@ def homeTagreba(request):
                     for line in lines:
                         container_width = get_text_width(texts[len(texts) - 4], fonts[len(texts) - 4])
                         text_width = get_text_width(line, font)
-                        x_position = (container_width - text_width) // 2 + 450
+                        x_position = (container_width - text_width) // 2 + 350
                         draw.text((x_position, y_position), line, fill=color, font=font)
                 elif i == len(texts) - 4 :
                     for line in lines:
@@ -606,6 +612,8 @@ def download_from_homeTagreba(request):
                             current_line = test_line
                         else:
                             lines.append(current_line)
+                            y_positions[i+1]+=100
+                            y_positions[i+2] = y_positions[i+1]+100
                             current_line = word
 
                     lines.append(current_line)

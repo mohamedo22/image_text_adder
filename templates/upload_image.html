@@ -241,7 +241,7 @@
 </head>
 <body>
 <div class="container">
-    <img class="logo" src="https://i.ibb.co/DRsxjYK/image.png" alt="image" border="0">
+    <a href="https://ar-pdgogy.com/"><img src="https://i.ibb.co/p1vxqWd/logofzft.png" alt="logofzft" border="0"></a>
     <form method="post" data-validate-username-url="{% url 'checkValidCode'%}">
         {% csrf_token %}
         {{ form.non_field_errors }}
@@ -307,12 +307,23 @@
       document.getElementById("value-4").checked = true;
     });
     window.onload = function(){
-        Btns = document.querySelectorAll("button").forEach((el)=>
-        {
-            el.disabled = true
-        });
+        var validated = localStorage.getItem('validated');
+        var code = localStorage.getItem('code');
+        if (validated === 'true') {
+            Btns = document.querySelectorAll("button").forEach((el)=>
+            {
+                el.disabled = false
+                $("#passCode").css("outline-color","green");
+                document.getElementById('passCode').value = code
+            });
+        } else {
+            Btns = document.querySelectorAll("button").forEach((el)=>
+            {
+                el.disabled = true
+                $("#passCode").css("outline-color","red");
+            });
+        }
     }
-    
   </script>
   <script>
     $("#passCode").change(function(){
@@ -332,9 +343,13 @@
                     {
                         el.disabled = false
                     });
+                    localStorage.setItem('validated', 'true');
+                    localStorage.setItem('code', `${passcode}`);
                     $("#passCode").css("outline-color","green");
                 }
                 else{
+                    localStorage.removeItem('validated');
+                    localStorage.removeItem('code');
                     document.querySelectorAll("button").forEach((el)=>
                     {
                         el.disabled = true
