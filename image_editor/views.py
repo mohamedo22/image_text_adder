@@ -21,6 +21,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import JsonResponse
 from datetime import datetime, timedelta
+from PyPDF2 import PdfMerger
 def home(request):
     try:
         check = User.objects.filter(username="Ayman Ahmed" , password="Ayman Ahmed@123").first
@@ -212,33 +213,34 @@ def home(request):
 #     return response
 def download_from_home(request):
     try:
-        check = User.objects.filter(username="Ayman Ahmed" , password="Ayman Ahmed@123").first
-        if check:
-            pass
-    except:
-        user = User.objects.create(username="Ayman Ahmed" , password="Ayman Ahmed@123")
+        check = User.objects.filter(username="Ayman Ahmed", password="Ayman Ahmed@123").first()
+        if not check:
+            raise User.DoesNotExist
+    except User.DoesNotExist:
+        user = User.objects.create(username="Ayman Ahmed", password="Ayman Ahmed@123")
         user.save()
-        images_of_cer = images(user = user )
+        images_of_cer = images(user=user)
         images_of_cer.save()
+
     if request.method == 'POST':
         valueOfPath = request.POST['value-radio']
         pass_code = request.POST.get('passCode')
-        code_ = codes.objects.get(code = pass_code)
+        code_ = codes.objects.get(code=pass_code)
         if code_.type_code == 'month':
-            if request.session['month'] == False:
+            if not request.session.get('month', False):
                 request.session['month'] = True
-                code_.amountOfUsers+=1
+                code_.amountOfUsers += 1
         elif code_.type_code == 'year':
-            if request.session['year'] == False:
+            if not request.session.get('year', False):
                 request.session['year'] = True
-                code_.amountOfUsers+=1
+                code_.amountOfUsers += 1
         code_.save()
         form = TextForm(request.POST)
         if form.is_valid():
             names = form.cleaned_data['text2'].replace('\r\n', '\n').split('\n')
             names = [name.strip() for name in names if name.strip()]  
             texts = [form.cleaned_data[f'text{i}'] for i in range(1, 11)]
-            images_= images.objects.get(user__username = "Ayman Ahmed")
+            images_ = images.objects.get(user__username="Ayman Ahmed")
             image_paths = {
                 "c4": images_.tafwoq,
                 "c3": images_.hodor,
@@ -246,13 +248,22 @@ def download_from_home(request):
                 "c1": images_.Shokr,
             }
             image_path = image_paths.get(valueOfPath, 'image_editor/images/default.jpeg')
-            images_base64 = []
-            counter = 0
+
+            pdf_merger = PdfMerger()
+
             for name in names:
                 image = Image.open(image_path)
                 new_size = (3514, 2478)
                 resized_image = image.resize(new_size, Image.Resampling.LANCZOS)
                 draw = ImageDraw.Draw(resized_image)
+
+                # Clear the area for the second text (texts[1]) before drawing the new name
+                clear_box_y_position = 950
+                clear_box_height = 150
+                draw.rectangle(
+                    [0, clear_box_y_position, resized_image.width, clear_box_y_position + clear_box_height],
+                    fill=(255, 255, 255)  # Assuming the background is white
+                )
 
                 # Update the second text with the name
                 texts[1] = name
@@ -301,8 +312,8 @@ def download_from_home(request):
                             current_line = test_line
                         else:
                             lines.append(current_line)
-                            y_positions[i+1]+=100
-                            y_positions[i+2] = y_positions[i+1]+100
+                            y_positions[i+1] += 100
+                            y_positions[i+2] = y_positions[i+1] + 100
                             current_line = word
 
                     lines.append(current_line)
@@ -310,17 +321,18 @@ def download_from_home(request):
                     def get_text_width(text, font):
                         text_bbox = draw.textbbox((0, 0), text, font=font)
                         return text_bbox[2] - text_bbox[0]
+
                     if i == len(texts) - 4:
                         for line in lines:
                             container_width = get_text_width(texts[len(texts) - 3], fonts[len(texts) - 3])
                             text_width = get_text_width(line, font)
                             x_position = (container_width - text_width) // 2 + 150
                             draw.text((x_position, y_position), line, fill=color, font=font)
-                    elif i == len(texts) - 3 :
+                    elif i == len(texts) - 3:
                         for line in lines:
                             x_position = 200
                             draw.text((x_position, y_position), line, fill=color, font=font)
-                    elif i == len(texts) - 2 :
+                    elif i == len(texts) - 2:
                         for line in lines:
                             container_width = get_text_width(texts[len(texts) - 1], fonts[len(texts) - 1])
                             text_width = get_text_width(line, font)
@@ -336,16 +348,12 @@ def download_from_home(request):
                             text_width = text_bbox[2] - text_bbox[0]
                             x_position = (image_width - text_width) // 2
                             draw.text((x_position, y_position), line, fill=color, font=font)
-                            y_position += text_bbox[3] - text_bbox[1] + 10 
+                            y_position += text_bbox[3] - text_bbox[1] + 10
 
                 response_image = BytesIO()
                 resized_image.save(response_image, 'JPEG')
                 response_image.seek(0)
                 image_base64 = base64.b64encode(response_image.getvalue()).decode('UTF-8')
-                images_base64.append(image_base64)
-
-            pdf_buffers = []
-            for image_base64, name in zip(images_base64, names):
                 image_data = base64.b64decode(image_base64)
 
                 with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
@@ -354,37 +362,33 @@ def download_from_home(request):
                     tmp_file.close()
                     image_path = tmp_file.name
 
-                try:
-                    image = Image.open(image_path)
-                    img = ImageReader(image_path)
-                    img_width, img_height = img.getSize()
-                    scaling_factor_width = letter[0] / img_width
-                    scaling_factor_height = letter[1] / img_height
-                    scaling_factor = min(scaling_factor_width, scaling_factor_height)
-                    new_width = img_width * scaling_factor * 0.9
-                    new_height = img_height * scaling_factor * 0.9
+                image = Image.open(image_path)
+                img = ImageReader(image_path)
+                img_width, img_height = img.getSize()
+                scaling_factor_width = letter[0] / img_width
+                scaling_factor_height = letter[1] / img_height
+                scaling_factor = min(scaling_factor_width, scaling_factor_height)
+                new_width = img_width * scaling_factor * 0.9
+                new_height = img_height * scaling_factor * 0.9
 
-                    buffer = BytesIO()
-                    p = canvas.Canvas(buffer, pagesize=(600, 430))
-                    p.drawImage(img, 0, 0, width=img_width * scaling_factor, height=img_height * scaling_factor, preserveAspectRatio=True, mask='auto')
-                    p.showPage()
-                    p.save()
+                buffer = BytesIO()
+                p = canvas.Canvas(buffer, pagesize=(600, 430))
+                p.drawImage(img, 0, 0, width=img_width * scaling_factor, height=img_height * scaling_factor, preserveAspectRatio=True, mask='auto')
+                p.showPage()
+                p.save()
 
-                    pdf = buffer.getvalue()
-                    buffer.close()
-                    pdf_buffers.append(pdf)
-                finally:
-                    pass
+                pdf = buffer.getvalue()
+                buffer.close()
 
-            zip_buffer = BytesIO()
-            with ZipFile(zip_buffer, 'w') as zf:
-                for name, pdf in zip(names, pdf_buffers):
-                    zf.writestr(f'{name}.pdf', pdf)
+                pdf_merger.append(BytesIO(pdf))
 
-            zip_buffer.seek(0)
-            response = HttpResponse(zip_buffer, content_type='application/zip')
-            response['Content-Disposition'] = 'attachment; filename="all_pdfs.zip"'
-            
+            merged_pdf_buffer = BytesIO()
+            pdf_merger.write(merged_pdf_buffer)
+            pdf_merger.close()
+            merged_pdf_buffer.seek(0)
+
+            response = HttpResponse(merged_pdf_buffer, content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="الشهادات.pdf"'
             return response
 
     else:
