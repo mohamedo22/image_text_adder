@@ -217,12 +217,26 @@
             padding-right: 40px;
         }
         @media screen and (max-width:800px) {
+            textarea
+            {
+                transform: translateX(-1rem);
+                width: 90%;
+            }
+            .input-container {
+                width: 90%;
+                flex-wrap:wrap;
+                flex-direction:column-reverse;
+                margin-bottom:2rem;
+                gap:2rem;
+            }
             input[type="text"] {
-                width: 10rem;
+                width: 15rem;
             }
             .last-inputs-container
             {
                 display:flex;
+                flex-wrap:wrap;
+                margin-left:10vw;
                 gap:.5rem;
             }
             .radio-input {
