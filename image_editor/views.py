@@ -35,14 +35,9 @@ def home(request):
         valueOfPath = request.POST['value-radio']
         pass_code = request.POST.get('passCode')
         code_ = codes.objects.get(code = pass_code)
-        if code_.type_code == 'month':
-            if not request.session.get('month',False):
-                code_.amountOfUsers +=1
-                request.session['month'] = True
-        elif code_.type_code == 'year':
-              if not request.session.get('year',False):
-                code_.amountOfUsers +=1
-                request.session['year'] = True
+        if not request.session.get(f'c_{pass_code}',False):
+                code_.amountOfUsers += 1
+                request.session[f'c_{pass_code}'] = True
         code_.save()
         form = TextForm(request.POST)
         if form.is_valid():
