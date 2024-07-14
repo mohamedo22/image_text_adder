@@ -113,30 +113,25 @@ def home(request):
                         current_line = word
 
                 lines.append(current_line)
-
-                def get_text_width(text, font):
-                        text_bbox = draw.textbbox((0, 0), text, font=font)
-                        return (text_bbox[2] - text_bbox[0])
+                lines.append(current_line)
+                text_bbox = draw.textbbox((0, 0), text, font=font)
+                text_width = text_bbox[2] - text_bbox[0]
                 if i == len(texts) - 4:
-                        for line in lines:
-                            container_width = get_text_width(texts[len(texts) - 3], fonts[len(texts) - 3])
-                            text_width = get_text_width(line, font)
-                            x_position = (container_width - text_width) // 2 + 400
-                            draw.text((x_position, y_position), line, fill=color, font=font)
+                    for line in lines:
+                        x_position = (1500 - text_width) // 2
+                        draw.text((x_position, y_position), line, fill=color, font=font)
                 elif i == len(texts) - 3 :
-                        for line in lines:
-                            x_position = 400
-                            draw.text((x_position, y_position), line, fill=color, font=font)
+                    for line in lines:
+                        x_position = (1300 - text_width) // 2
+                        draw.text((x_position, y_position), line, fill=color, font=font)
                 elif i == len(texts) - 2 :
-                        for line in lines:
-                            container_width = get_text_width(texts[len(texts) - 1], fonts[len(texts) - 1])
-                            text_width = get_text_width(line, font)
-                            x_position = (container_width - text_width) // 2 + 2400
-                            draw.text((x_position, y_position), line, fill=color, font=font)
+                    for line in lines:
+                        x_position = (6000 - text_width) // 2
+                        draw.text((x_position, y_position), line, fill=color, font=font)
                 elif i == len(texts) - 1:
-                        for line in lines:
-                            x_position = 2500
-                            draw.text((x_position, y_position), line, fill=color, font=font)
+                    for line in lines:
+                        x_position = (6050 - text_width )// 2
+                        draw.text((x_position, y_position), line, fill=color, font=font)
                 else:
                     for line in lines:
                         text_bbox = draw.textbbox((0, 0), line, font=font)
@@ -315,32 +310,33 @@ def download_from_home(request):
                             y_positions[i+1] += 100
                             y_positions[i+2] = y_positions[i+1] + 100
                             current_line = word
-
-                    lines.append(current_line)
-
-                    def get_text_width(text, font):
-                        text_bbox = draw.textbbox((0, 0), text, font=font)
-                        return text_bbox[2] - text_bbox[0]
-
+                    text_bbox = draw.textbbox((0, 0), text, font=font)
+                    text_width = text_bbox[2] - text_bbox[0]
                     if i == len(texts) - 4:
                         for line in lines:
-                            container_width = get_text_width(texts[len(texts) - 3], fonts[len(texts) - 3])
-                            text_width = get_text_width(line, font)
-                            x_position = (container_width - text_width) // 2 + 150
+                            text_bbox2 = draw.textbbox((0, 0), texts[len(texts) - 3], font=font)
+                            text_width2 = text_bbox2[2] - text_bbox[0]
+                            if text_width < text_width2 :
+                                 x_position = (1350 - text_width) // 2
+                            else:
+                                 x_position = (1300 - text_width) // 2
                             draw.text((x_position, y_position), line, fill=color, font=font)
-                    elif i == len(texts) - 3:
+                    elif i == len(texts) - 3 :
                         for line in lines:
-                            x_position = 200
+                            x_position = (1300 - text_width) // 2
                             draw.text((x_position, y_position), line, fill=color, font=font)
-                    elif i == len(texts) - 2:
+                    elif i == len(texts) - 2 :
                         for line in lines:
-                            container_width = get_text_width(texts[len(texts) - 1], fonts[len(texts) - 1])
-                            text_width = get_text_width(line, font)
-                            x_position = (container_width - text_width) // 2 + 2650
+                            text_bbox2 = draw.textbbox((0, 0), texts[len(texts) - 1], font=font)
+                            text_width2 = text_bbox2[2] - text_bbox[0]
+                            if text_width < text_width2 :
+                                 x_position = (5950 - text_width) // 2
+                            else:
+                                 x_position = (6050 - text_width) // 2
                             draw.text((x_position, y_position), line, fill=color, font=font)
                     elif i == len(texts) - 1:
                         for line in lines:
-                            x_position = 2700
+                            x_position = (6000 - text_width )// 2
                             draw.text((x_position, y_position), line, fill=color, font=font)
                     else:
                         for line in lines:
@@ -370,7 +366,7 @@ def download_from_home(request):
                 scaling_factor = min(scaling_factor_width, scaling_factor_height)
                 new_width = img_width * scaling_factor * 0.9
                 new_height = img_height * scaling_factor * 0.9
-
+                
                 buffer = BytesIO()
                 p = canvas.Canvas(buffer, pagesize=(600, 430))
                 p.drawImage(img, 0, 0, width=img_width * scaling_factor, height=img_height * scaling_factor, preserveAspectRatio=True, mask='auto')
@@ -480,30 +476,24 @@ def homeTagreba(request):
                         y_positions[i+1]+=100
                         y_positions[i+2] = y_positions[i+1]+100
                         current_line = word
-
+                text_bbox = draw.textbbox((0, 0), text, font=font)
+                text_width = text_bbox[2] - text_bbox[0]
                 lines.append(current_line)
-                def get_text_width(text, font):
-                    text_bbox = draw.textbbox((0, 0), text, font=font)
-                    return text_bbox[2] - text_bbox[0]
                 if i == len(texts) - 5:
                     for line in lines:
-                        container_width = get_text_width(texts[len(texts) - 4], fonts[len(texts) - 4])
-                        text_width = get_text_width(line, font)
-                        x_position = (container_width - text_width) // 2 + 350
+                        x_position = (1500 - text_width) // 2
                         draw.text((x_position, y_position), line, fill=color, font=font)
                 elif i == len(texts) - 4 :
                     for line in lines:
-                        x_position = 400
+                        x_position = (1300 - text_width) // 2
                         draw.text((x_position, y_position), line, fill=color, font=font)
                 elif i == len(texts) - 3 :
                     for line in lines:
-                        container_width = get_text_width(texts[len(texts) - 2], fonts[len(texts) - 2])
-                        text_width = get_text_width(line, font)
-                        x_position = (container_width - text_width) // 2 + 2400
+                        x_position = (6000 - text_width) // 2
                         draw.text((x_position, y_position), line, fill=color, font=font)
                 elif i == len(texts) - 2:
                     for line in lines:
-                        x_position = 2500
+                        x_position = (6050 - text_width )// 2
                         draw.text((x_position, y_position), line, fill=color, font=font)
                 elif i == len(texts) - 1:
                     for line in lines:
@@ -556,6 +546,7 @@ def download_from_homeTagreba(request):
                 "c1": images_.Shokr,
             }
             image_path = image_paths.get(valueOfPath, 'image_editor/images/default.jpeg')
+            pdf_merger = PdfMerger()
             images_base64 = []
             counter = 0
             for name in names:
@@ -563,9 +554,7 @@ def download_from_homeTagreba(request):
                 new_size = (3514, 2478)
                 resized_image = image.resize(new_size, Image.Resampling.LANCZOS)
                 draw = ImageDraw.Draw(resized_image)
-
                 texts[1] = name
-
                 y_positions = [800, 950, 1200, 1400, 1550, 1700, 2000, 2150, 2000, 2150,500]
                 fonts = [
                     ImageFont.truetype("image_editor/fonts/araib/second_font.ttf", 90),
@@ -615,30 +604,35 @@ def download_from_homeTagreba(request):
                             y_positions[i+2] = y_positions[i+1]+100
                             current_line = word
 
-                    lines.append(current_line)
 
-                    def get_text_width(text, font):
-                        text_bbox = draw.textbbox((0, 0), text, font=font)
-                        return text_bbox[2] - text_bbox[0]
+                    text_bbox = draw.textbbox((0, 0), text, font=font)
+                    text_width = text_bbox[2] - text_bbox[0]
+                    lines.append(current_line)
                     if i == len(texts) - 5:
                         for line in lines:
-                            container_width = get_text_width(texts[len(texts) - 4], fonts[len(texts) - 4])
-                            text_width = get_text_width(line, font)
-                            x_position = (container_width - text_width) // 2 + 150
+                            text_bbox2 = draw.textbbox((0, 0), texts[len(texts) - 4], font=font)
+                            text_width2 = text_bbox2[2] - text_bbox[0]
+                            if text_width < text_width2 :
+                                 x_position = (1350 - text_width) // 2
+                            else:
+                                 x_position = (1300 - text_width) // 2
                             draw.text((x_position, y_position), line, fill=color, font=font)
                     elif i == len(texts) - 4 :
                         for line in lines:
-                            x_position = 200
+                            x_position = (1300 - text_width) // 2
                             draw.text((x_position, y_position), line, fill=color, font=font)
                     elif i == len(texts) - 3 :
                         for line in lines:
-                            container_width = get_text_width(texts[len(texts) - 2], fonts[len(texts) - 2])
-                            text_width = get_text_width(line, font)
-                            x_position = (container_width - text_width) // 2 + 2650
+                            text_bbox2 = draw.textbbox((0, 0), texts[len(texts) - 2], font=font)
+                            text_width2 = text_bbox2[2] - text_bbox[0]
+                            if text_width < text_width2 :
+                                 x_position = (5950 - text_width) // 2
+                            else:
+                                 x_position = (6050 - text_width) // 2
                             draw.text((x_position, y_position), line, fill=color, font=font)
                     elif i == len(texts) - 2:
                         for line in lines:
-                            x_position = 2700
+                            x_position = (6000 - text_width )// 2
                             draw.text((x_position, y_position), line, fill=color, font=font)
                     elif i == len(texts) - 1:
                         for line in lines:
@@ -658,49 +652,40 @@ def download_from_homeTagreba(request):
                 resized_image.save(response_image, 'JPEG')
                 response_image.seek(0)
                 image_base64 = base64.b64encode(response_image.getvalue()).decode('UTF-8')
-                images_base64.append(image_base64)
-
-            pdf_buffers = []
-            for image_base64, name in zip(images_base64, names):
                 image_data = base64.b64decode(image_base64)
-
                 with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
                     tmp_file.write(image_data)
                     tmp_file.flush()
                     tmp_file.close()
                     image_path = tmp_file.name
 
-                try:
-                    image = Image.open(image_path)
-                    img = ImageReader(image_path)
-                    img_width, img_height = img.getSize()
-                    scaling_factor_width = letter[0] / img_width
-                    scaling_factor_height = letter[1] / img_height
-                    scaling_factor = min(scaling_factor_width, scaling_factor_height)
-                    new_width = img_width * scaling_factor * 0.9
-                    new_height = img_height * scaling_factor * 0.9
+                image = Image.open(image_path)
+                img = ImageReader(image_path)
+                img_width, img_height = img.getSize()
+                scaling_factor_width = letter[0] / img_width
+                scaling_factor_height = letter[1] / img_height
+                scaling_factor = min(scaling_factor_width, scaling_factor_height)
+                new_width = img_width * scaling_factor * 0.9
+                new_height = img_height * scaling_factor * 0.9
+                
+                buffer = BytesIO()
+                p = canvas.Canvas(buffer, pagesize=(600, 430))
+                p.drawImage(img, 0, 0, width=img_width * scaling_factor, height=img_height * scaling_factor, preserveAspectRatio=True, mask='auto')
+                p.showPage()
+                p.save()
 
-                    buffer = BytesIO()
-                    p = canvas.Canvas(buffer, pagesize=(600, 320))
-                    p.drawImage(img, 0, 0, width=img_width * scaling_factor, height=img_height * scaling_factor, preserveAspectRatio=True, mask='auto')
-                    p.showPage()
-                    p.save()
+                pdf = buffer.getvalue()
+                buffer.close()
 
-                    pdf = buffer.getvalue()
-                    buffer.close()
-                    pdf_buffers.append(pdf)
-                finally:
-                    pass
+                pdf_merger.append(BytesIO(pdf))
 
-            zip_buffer = BytesIO()
-            with ZipFile(zip_buffer, 'w') as zf:
-                for name, pdf in zip(names, pdf_buffers):
-                    zf.writestr(f'{name}.pdf', pdf)
+            merged_pdf_buffer = BytesIO()
+            pdf_merger.write(merged_pdf_buffer)
+            pdf_merger.close()
+            merged_pdf_buffer.seek(0)
 
-            zip_buffer.seek(0)
-            response = HttpResponse(zip_buffer, content_type='application/zip')
-            response['Content-Disposition'] = 'attachment; filename="all_pdfs.zip"'
-            
+            response = HttpResponse(merged_pdf_buffer, content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="الشهادات.pdf"'
             return response
 
     else:
